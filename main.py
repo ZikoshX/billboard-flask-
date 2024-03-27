@@ -9,26 +9,32 @@ from google_auth_oauthlib.flow import Flow
 import os
 from google.oauth2 import id_token
 from google.auth.transport import requests
-import datetime
-from dotenv import load_dotenv
 from flask_mail import Mail, Message
+import uuid
+from flask_sqlalchemy import SQLAlchemy
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin import AdminIndexView, expose, BaseView
+from flask_security import current_user
 
 app=Flask(__name__)
-load_dotenv()
+
+
 @app.route('/add/<int:num1>/<int:num2>')
 def add(num1, num2):
     return str(num1 + num2)
 
-app.config['MAIL_SERVER'] = 'smtp.example.com'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'mashrapzere44@gmail.com'
-app.config['MAIL_PASSWORD'] = 'zm.159753'
-
-
-
+app.config['MAIL_PASSWORD'] = 'cdha zmdd hhlh tjvq'
 
 mail = Mail(app)
+admin = Admin(app)
+class ManagerView(ModelView):
+    column_display_pk = True  # Display primary keys in the list view
+    column_searchable_list = ['name', 'email']   
 
 app.secret_key = secrets.token_hex(16)  # Generate a random 32-character hexadecimal string
 
@@ -47,6 +53,67 @@ DB_USER='postgres'
 DB_PASS='13579'
 
 conn=psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+class Manager(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    lastname = db.Column(db.String(50))
+    username = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(128))
+    email = db.Column(db.String(100), unique=True)
+    phone_number = db.Column(db.String(20))
+
+    # Define the relationship between Manager and Posts
+    posts = db.relationship('Posts', backref='manager', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<Manager {self.username}>'
+
+class Posts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    body = db.Column(db.Text)
+    manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'), nullable=False)
+    users_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+
+    def __repr__(self):
+        return f'<Post {self.title}>'
+    
+class Users(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    lastname = db.Column(db.String(50))
+    username = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(128))
+    email = db.Column(db.String(100), unique=True)
+    phone_number = db.Column(db.String(20))
+    posts = db.relationship('Posts', backref='users', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<User {self.username}>'
+
+class MyAdminIndexView(AdminIndexView):
+    @expose('/')
+    def index(self):
+        return redirect('/home')
+
+    def _menu(self):
+        menu = super()._menu()
+        menu.append(('home', 'Home'))
+        return menu
+
+    def is_visible(self):
+        return False
+
+
+# Add Manager and Posts views as before
+admin.add_view(ModelView(Manager, db.session))
+admin.add_view(ModelView(Posts, db.session))
+admin.add_view(ModelView(Users, db.session))
 
 @app.route('/home')
 def home():
@@ -149,33 +216,41 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-     cursor=conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-     if request.method=='POST' and 'username' in request.form and 'password' in request.form:
-          username=request.form['username']
-          password=request.form['password']
-          print(username)
-          print(password)
-          cursor.execute('SELECT * FROM users WHERE username=%s', (username,))
-          account=cursor.fetchone()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        username = request.form['username']
+        password = request.form['password']
+        
+        # Attempt to authenticate as a manager
+        manager = Manager.query.filter_by(username=username).first()
+        if manager and check_password_hash(manager.password, password):
+            # Authentication successful, set session variables for manager
+            session['loggedin'] = True
+            session['manager_id'] = manager.id
+            session['manager_name'] = manager.name
+            flash('Manager login successful!', 'success')
+            return redirect(url_for('manager'))  # Redirect to manager profile route
 
-          if account:
-            password_rs=account['password']
-            print(password_rs)
-            if check_password_hash(password_rs,password):
-                session['loggedin']=True
-                session['id']=account['id']
-                session['username']=account['username']
-                return redirect(url_for('profile'))
-            
-          else:
-              flash('Incorrect username or password')
+        # Attempt to authenticate as a user
+        user = Users.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, password):
+            # Authentication successful, set session variables for user
+            session['loggedin'] = True
+            session['user_id'] = user.id
+            session['user_name'] = user.name
+            flash('User login successful!', 'success')
+            return redirect(url_for('profile'))  # Redirect to user profile route
+        
+        # If authentication fails for both manager and user
+        flash('Incorrect username or password', 'danger')
 
-     elif request.method == 'GET':
+    elif request.method == 'GET':
         # Display login form with Google login link
         google_login_url, _ = flow.authorization_url()
-        return render_template('login.html', google_login_url=google_login_url)        
+        return render_template('login.html', google_login_url=google_login_url)
 
-     return render_template('login.html')
+    return render_template('login.html')
+
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -215,24 +290,64 @@ def change_password():
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    if 'login' in session:
+        return redirect('/')
     if request.method == 'POST':
         email = request.form['email']
-        username = request.form['username']  
-
+        #username = request.form['username']  
+        token = str(uuid.uuid4())
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         # Check if the username exists in the database
-        cursor.execute('SELECT * FROM users WHERE username=%s AND email=%s', (username, email))
+        result = cursor.execute('SELECT * FROM users WHERE  email=%s', [email])
         account = cursor.fetchone()
-
         if account:
-            # Redirect to change_password route only if the email and username combination is correct
-            return redirect(url_for('change_password'))
+            msg=Message(subject="Forgot password request", sender="mashrapzere44@gmail.com", recipients=[email])
+            msg.body = render_template('sent.html', token=token, account=account)
+            mail.send(msg)
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute("UPDATE users SET token=%s WHERE email=%s", [token,email])
+            conn.commit()
+            cursor.close()
+            flash("Email already sent to your email", 'success')
+            return redirect(url_for('forgot_password'))
         else:
-            flash('User with this username and email combination does not exist.')
+            flash("Email do not match", 'danger')
+            
+        #if account:
+            # Redirect to change_password route only if the email and username combination is correct
+            #return redirect(url_for('change_password'))
+        #else:
+            #flash('User with this username and email combination does not exist.')
 
     return render_template('forgot_password.html')
 
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if 'login' in session:
+        return redirect('/')
+    if request.method == 'POST':
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        #username = request.form['username']  
+        token1 = str(uuid.uuid4())
+        if password!=confirm_password:
+           flash("Passwords do not match", 'danger')
+           return redirect(url_for('reset_password'))
+        password=generate_password_hash(confirm_password)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        result = cursor.execute('SELECT * FROM users WHERE  token=%s', [token])
+        account = cursor.fetchone()
+        if account:
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute("UPDATE users SET token=%s, password=%s WHERE token=%s", [token1,password,token])
+            conn.commit()
+            cursor.close()
+            flash("Your password successfully updated", 'success')
+            return redirect(url_for('login'))
+        else:
+            flash("Your token is invalid", 'danger')
 
+    return render_template('reset_password.html')
 
 def send_reset_email(email, reset_token):
     # Create a password reset email message
@@ -243,9 +358,9 @@ def send_reset_email(email, reset_token):
 
     # Send the email
     mail.send(msg)
-from flask import request
+
 
 
 
 if __name__=='__main__':
-    app.run()
+   app.run(debug=True, port=5001)
