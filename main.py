@@ -15,7 +15,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView, expose, BaseView
-from flask_security import current_user
+
 
 app=Flask(__name__)
 
