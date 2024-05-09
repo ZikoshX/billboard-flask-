@@ -1,1 +1,596 @@
+<!DOCTYPE html>
+<!-- Created By CodingLab - www.codinglabweb.com -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <title> Responsive Contact Us Form  | CodingLab </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+ 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!--GOOGLE FONTS-->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
+    <!-- Include the FilePond plugin for image preview -->
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet">
+    <script>
+      function validateForm() {
+    var companyName = document.getElementById("company-name").value;
+    var billboardInfo = document.getElementById("billboard-info").value;
+    var pdfFormat = document.getElementById("pdf-format").value;
+    var startDate = document.getElementById("Start").value;
+    var endDate = document.getElementById("End").value;
+    var city = document.getElementById("city").value;
+    var size = document.getElementById("size").value;
+    var display = document.getElementById("display").value;
+    var surface = document.getElementById("surface").value;
+    
+    var errorMessage = "";
+
+    if (companyName === "") {
+        errorMessage += "Company name is required.\n";
+    }
+    if (billboardInfo === "") {
+        errorMessage += "Billboard info is required.\n";
+    }
+    if (pdfFormat === "") {
+        errorMessage += "PDF format of billboard is required.\n";
+    }
+    if (startDate === "") {
+        errorMessage += "Start date is required.\n";
+    }
+    if (endDate === "") {
+        errorMessage += "End date is required.\n";
+    }
+    if (city === "") {
+        errorMessage += "Region is required.\n";
+    }
+    if (size === "") {
+        errorMessage += "Size is required.\n";
+    }
+    if (display === "") {
+        errorMessage += "Display type is required.\n";
+    }
+    if (surface === "") {
+        errorMessage += "Surface type is required.\n";
+    }
+    if (new Date(endDate) < new Date(startDate)) {
+        errorMessage += "End date cannot be earlier than start date.\n";
+    }
+    if (errorMessage !== "") {
+        alert(errorMessage);
+        return false;
+    }
+    return true;
+}
+
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      var selectElement = document.getElementById("region");
+      var placeholderOption = selectElement.options[0]; // Get the "Choose the region" option
+
+      // Add event listener to the select element
+      selectElement.addEventListener("change", function() {
+          var selectedOption = this.options[this.selectedIndex];
+
+          if (selectedOption === placeholderOption) {
+              // Hide the placeholder option
+              placeholderOption.style.display = "none";
+          } else {
+              // Show the placeholder option
+              placeholderOption.style.display = "block";
+          }
+      });
+  });
+</script>
+<script>
+  // This function is triggered whenever a dropdown changes its value
+function updateColor(selectElement) {
+  if (selectElement.value) {
+    selectElement.classList.add('selected');
+  } else {
+    selectElement.classList.remove('selected');
+  }
+}
+
+// Attach the function to all select elements on your page
+document.querySelectorAll('select').forEach(selectElement => {
+  selectElement.addEventListener('change', () => updateColor(selectElement));
+});
+
+</script>
+<script>
+  function updateColor(select) {
+    console.log(select.value);
+  }
+</script>
+<script>
+ // This function is called whenever a checkbox changes its state
+ function updateImageDisplay(checkbox, imageName) {
+  var imageElement = document.getElementById(imageName);
+  
+  // Check if the checkbox is checked
+  if (checkbox.checked) {
+    // Display the image
+    imageElement.style.display = 'block';
+    // Ensure the image is inline with the checkbox
+    imageElement.style.verticalAlign = 'top';
+  } else {
+    // Hide the image if the checkbox is unchecked
+    imageElement.style.display = 'none';
+  }
+}
+</script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo-container"> 
+        <a href="{{ url_for('home') }}" class="logo-text">Happy Client</a>
+    </div>    
+        <nav class="navbar">
+          <ul class="nav-links">
+            <li {% if active_page == 'loginclient' %}class="active"{% endif %}><a href="{{ url_for('loginclient') }}">Dashboard</a></li>
+            <li {% if active_page == 'profile' %}class="active"{% endif %}><a href="{{ url_for('profile') }}">Order to Billboard</a></li>
+            <li {% if active_page == 'change' %}class="active"{% endif %}><a href="{{ url_for('changed_order', order_id=order_id) }}">Change order</a></li>
+            <li {% if active_page == 'penalty' %}class="active"{% endif %}><a href="{{ url_for('penalty') }}">Penalty</a></li>
+            <li {% if active_page == 'dashboard' %}class="active"{% endif %}><a href="{{ url_for('dashboard') }}">Profile</a></li>
+          </ul>
+        </nav>
+        <div class="language-select">
+          <select>
+              <option value="en" class="select option">English</option>
+              <option value="ru">Русский</option>
+              <option value="kz">Қазақша</option>
+          </select>
+        </div>
+    </header>
+
+    
+    <!-- multistep form -->
+    <form id="payment-form" class="order-form" action="{{ url_for('changed_order', order_id=order_id) }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+    <h2 class="fs-title">Order to billboard, {{ name }} {{ surname }}</h2>
+    <!-- progressbar -->
+    <ul id="progressbar">
+      <li class="active">Main info</li>
+      <li>Options</li>
+      <li>Review</li>
+    </ul>
+    <!-- fieldsets -->
+    <fieldset>
+      <label for="company-name" style="font-size: 19px; font-weight: bolder;">Company name:</label>
+      <input type="text" name="company-name" id="company-name" value="{{ order.company_name }}" onchange="updateChangedFieldsAndUpdateReview()"/>
+      <label for="billboard-info" style="font-size: 19px; font-weight: bolder;">What about the billboard</label>
+      <input type="text" id="billboard-info" name="billboard-info" value="{{ order.billboard_info }}" onchange="updateChangedFieldsAndUpdateReview()"/>
+      <label for="Start" style="font-size: 19px; font-weight: bolder;" >Start date:</label>
+      <input type="date" id="Start" name="Start" value="{{ order.start_date }}" onchange="updateChangedFieldsAndUpdateReview()">
+      <label for="End" style="font-size: 19px; font-weight: bolder;">End date:</label>
+          <input type="date" id="End" name="End" value="{{ order.end_date }}" onchange="updateChangedFieldsAndUpdateReview()">
+
+      <input type="button" name="next" class="next action-button" value="Next" />
+    </fieldset>
+    <fieldset id="region-list">
+
+      <section>
+        <legend for="region" style="margin-left: 50px; font-size: 19px; margin-bottom: 25px; font-weight: bolder;" >Choose the region:</legend>
+        <div class="checkbox-group color1">
+            <div class="checkbox-item">
+      <input type="checkbox" name="city" value="здания Дворца Спорта им. Б.Шолака" {% if 'здания Дворца Спорта им. Б.Шолака' in order.region %}checked{% endif %}  id="checkbox1.1" onchange="updateImageDisplay(this, '1657955079google-icon-png.png')">
+      <label for="checkbox1.1">Здания Дворца Спорта им. Б.Шолака (3.1 x 2.1 m) </label><br>
+</div>
+<div class="checkbox-item">
+       <input type="checkbox" name="city" value="Толе би - Ауэзова" {% if 'Толе би - Ауэзова' in order.region %}checked{% endif %} id="checkbox1.2" onchange="updateImageDisplay(this,'billboard2Image')" onclick="updateChangedFieldsAndUpdateReview()">
+         <label for="checkbox1.2">Толе би - Ауэзова (3.1 x 2.1 m)</label>
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Абая - Розыбакиева" {% if 'Абая - Розыбакиева' in order.region %}checked{% endif %}  id="checkbox1.3" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+           <label for="checkbox1.3">Абая - Розыбакиева (3.1 x 2.1 m)</label>
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Медео и ГЛК Шымбулак" {% if 'Медео и ГЛК Шымбулак' in order.region %}checked{% endif %}  id="checkbox1.4" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+           <label for="checkbox1.4">Медео и ГЛК Шымбулак (5.1 x 6.1 m)</label>
+  </div>
+  <div class="checkbox-item">
+           <input type="checkbox" name="city" value="ТЦ ESENTAI" {% if 'ТЦ ESENTAI' in order.region %}checked{% endif %}  id="checkbox1.5" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+         <label for="checkbox1.5">ТЦ ESENTAI (5.1 x 6.1 m)</label>
+     </div>  
+     <div class="checkbox-item">
+           <input type="checkbox" name="city" value="MEGA(Розыбакиева)" {% if 'MEGA(Розыбакиева)' in order.region %}checked{% endif %} id="checkbox1.6" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+        <label for="checkbox1.6">MEGA(Розыбакиева) (5.1 x 6.1 m)</label>
+         </div>  
+         <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Арбат (ЦУМ)" {% if 'Арбат (ЦУМ)' in order.region %}checked{% endif %}  id="checkbox1.7" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+    <label for="checkbox1.7">Арбат (ЦУМ) (3.1 x 2.1 m)</label>
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Фитнес-клуб World class" {% if 'Фитнес-клуб World class' in order.region %}checked{% endif %}  id="checkbox1.8" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+                  <label for="checkbox1.8">Фитнес-клуб World class (3.1 x 2.1 m)</label>
+      </div>
+      <div class="checkbox-item">
+           <input type="checkbox" name="city" value="АЗС (Royal Petrol, Helios)" {% if 'АЗС (Royal Petrol, Helios)' in order.region %}checked{% endif %}  id="checkbox1.9" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+           <label for="checkbox1.9">АЗС (Royal Petrol, Helios) (5.1 x 6.1 m)</label>
+    </div>
+    <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Метрополитен Алматы" {% if 'Метрополитен Алматы' in order.region %}checked{% endif %} id="checkbox1.10" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+     <label for="checkbox1.10">Метрополитен Алматы (3.1 x 2.1 m)</label>
+       </div>
+       <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Абай-Алтынсарин" {% if 'Абай-Алтынсарин' in order.region %}checked{% endif %} id="checkbox1.11" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+        <label for="checkbox1.11">Абай-Алтынсарин (3.1 x 2.1 m)</label>
+         </div>
+         <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Коктем-1" {% if 'Коктем-1' in order.region %}checked{% endif %} id="checkbox1.12" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+    <label for="checkbox1.12">Коктем-1 (4.2 x 3.1 м)</label>
+         </div>
+         <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Байзакова - Тимирязева" {% if 'Байзакова - Тимирязева' in order.region %}checked{% endif %} id="checkbox1.13" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+        <label for="checkbox1.13">Байзакова - Тимирязева (3.5 x 2.5 м)</label>
+        </div>
+        <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Жандосова - Сатпаева" {% if 'Жандосова - Сатпаева' in order.region %}checked{% endif %} id="checkbox1.14" onchange="updateColor(this)" onclick="updateChangedFieldsAndUpdateReview()">
+     <label for="checkbox1.14">Жандосова - Сатпаева (5.0 x 3.0 м)</label>
+         </div>
+         <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Райымбека - Фурманова" {% if 'Райымбека - Фурманова' in order.region %}checked{% endif %} id="checkbox1.15" onchange="updateColor(this)"onclick="updateChangedFieldsAndUpdateReview()">
+        <label for="checkbox1.15">Райымбека - Фурманова (4.0 x 2.5 м)</label>
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Московская" {% if 'Московская' in order.region %}checked{% endif %} id="checkbox1.16" onchange="updateImageDisplay(this, 'billboard14Image')" onclick="updateChangedFieldsAndUpdateReview()">
+             <label for="checkbox1.16">Московская (3.7 x 2.2 м)</label>  
+  </div>
+  <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Жибек Жолы - Толе би" {% if 'Жибек Жолы - Толе би' in order.region %}checked{% endif %} id="checkbox1.17" onchange="updateImageDisplay(this, 'billboard15Image')" onclick="updateChangedFieldsAndUpdateReview()">
+              <label for="checkbox1.17">Жибек Жолы - Толе би (4.5 x 3.0 м)</label> 
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Наурызбай батыра" {% if 'Наурызбай батыра' in order.region %}checked{% endif %} id="checkbox1.18" onchange="updateImageDisplay(this, 'billboard16Image')"onclick="updateChangedFieldsAndUpdateReview()">
+                 <label for="checkbox1.18">Наурызбай батыра (3.8 x 2.5 м)</label> 
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Манаса - Достык" {% if 'Манаса - Достык' in order.region %}checked{% endif %}  id="checkbox1.19" onchange="updateImageDisplay(this, 'billboard17Image')"onclick="updateChangedFieldsAndUpdateReview()">
+                <label for="checkbox1.19">Манаса - Достык (4.2 x 3.0 м)</label>  
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Кабанбай батыра - Масанчи" {% if 'Кабанбай батыра - Масанчи' in order.region %}checked{% endif %} id="checkbox1.20" onchange="updateImageDisplay(this, 'billboard18Image')"onclick="updateChangedFieldsAndUpdateReview()">
+               <label for="checkbox1.20">Кабанбай батыра - Масанчи (3.3 x 2.0 м)</label> 
+          </div> 
+         </div>
+        </section>
+
+        <section>
+          <label for="display" style="font-size: 19px; font-weight: bolder;">Choose the type of display</label>
+          <select id="display" name="display" class="custom-select sources" onchange="updateTotalPrice(); updateChangedFieldsAndUpdateReview();">
+            {% for order in orders %}
+                <option value="{{ order.display }}" {% if display == order.display %}selected{% endif %}>{{ order.display }}</option>
+            {% endfor %}
+            cons.log("jjhhf")
+            <option value="single face">Single face</option>
+            <option value="double face">Double face</option>
+            <option value="lamp posts">Lamp posts</option>
+            <option value="interactive">Interactive</option>
+        </select>
+      </section>
+      
+      <section>
+          <label for="surface" style="font-size: 19px; font-weight: bolder;">Choose the type of surface</label>
+          <select id="surface" name="surface" class="custom-select sources" onchange="updateTotalPrice(); updateChangedFieldsAndUpdateReview();">
+            {% for order in orders %}
+                <option value="{{ order.surface }}" {% if surface == order.surface %}selected{% endif %}>{{ order.surface }}</option>
+            {% endfor %}
+            <option value="vinyl">Vinyl</option>
+            <option value="digital">Digital</option>
+            <option value="static">Static</option>
+        </select>
+      </section>
+      
+
+          <div id="total-price" style="margin-left: 25px;">
+            <span>{{ price }}</span>
+        </div>
+          
+     <input type="button" name="previous" class="previous action-button" value="Previous" />
+      <input type="button" name="next" class="next action-button" value="Next"  onclick="updateChangedFieldsAndUpdateReview();"/>
+    </fieldset>
+
+<fieldset id="review-section">
+    <label>Company Name: <span id="review-company-name"></span></label>
+    <label>Billboard Info: <span id="review-billboard-info"></span></label>
+    <label>Start Date: <span id="review-start-date"></span></label>
+    <label>End Date: <span id="review-end-date"></span></label>
+    <label>Region: <span id="review-region"></span></label>
+    <label>Display Type: <span id="review-display-type"></span></label>
+    <label>Surface Type: <span id="review-surface-type"></span></label>
+    <label>Total Price: <span id="review-total-price"></span></label>
+    <input type="button" name="previous" class="previous action-button" value="Previous" />
+<button type="submit" name="submit" class="submit action-button" id="goButton" onclick="submitForm(); updateChangedFieldsAndUpdateReview();">Complete order</button>
+
+</fieldset>
+</form>
+<footer>
+    <div class="footer">
+    <div class="row">
+    <a href="#"><i class="fa fa-facebook"></i></a>
+    <a href="#"><i class="fa fa-instagram"></i></a>
+    <a href="#"><i class="fa fa-youtube"></i></a>
+    <a href="#"><i class="fa fa-twitter"></i></a>
+    </div>
+    
+    <div class="row">
+    <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#service">Our Services</a></li>
+    <li><a href="#contain-h2">About us</a></li>
+    <li><a href="#contacts">Contact us</a></li>
+    </ul>
+    </div>
+    
+    <div class="row">
+   © 2024 | SDU | All rights reserved
+    </div>
+    </div>
+    </footer>
+
+    <script  src="{{ url_for('static', filename='js/example.js') }}"></script>
+    <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+    <!-- Include the FilePond plugin for PDF preview if needed -->
+    <script src="https://unpkg.com/filepond-plugin-pdf-preview/dist/filepond-plugin-pdf-preview.min.js"></script>
+    <script>
+      // JavaScript to set the selected options based on the values in the 'display' and 'surface' variables
+      var display = "{{ display }}";
+      var surface = "{{ surface }}";
+  
+      document.getElementById('display').value = display;
+      document.getElementById('surface').value = surface;
+      var surfaceType = document.getElementById('surface').value;
+
+// Log the values for debugging
+        console.log("Display Type: ", display);
+        console.log("Surface Type: ", surfaceType); 
+  </script>
+
+    <script>
+      // Initialize an empty array to store changed fields
+      var changed_fields = [];
+    
+      // Function to update changed_fields array when a field changes
+      var display = "{{ display }}";
+      var surface = "{{ surface }}";
+      // Function to update the review section with changed data
+      function updateReviewSection() {
+// Select the elements in the review section
+var reviewCompanyName = document.getElementById('review-company-name');
+var reviewBillboardInfo = document.getElementById('review-billboard-info');
+var reviewStartDate = document.getElementById('review-start-date');
+var reviewEndDate = document.getElementById('review-end-date');
+var reviewRegion = document.getElementById('review-region');
+var reviewDisplayType = document.getElementById('review-display-type');
+var reviewSurfaceType = document.getElementById('review-surface-type');
+var reviewTotalPrice = document.getElementById('review-total-price');
+
+
+document.getElementById('display').value = display;
+document.getElementById('surface').value = surface;
+// Update the review section with the changed values from the form
+reviewCompanyName.textContent = document.getElementById('company-name').value;
+reviewBillboardInfo.textContent = document.getElementById('billboard-info').value;
+reviewStartDate.textContent = document.getElementById('Start').value;
+reviewEndDate.textContent = document.getElementById('End').value;
+var selectedRegions = document.querySelectorAll('input[name="city"]:checked');
+var regions = Array.from(selectedRegions).map(function(checkbox) {
+return checkbox.value;
+});
+reviewRegion.textContent = regions.join(', ');
+reviewDisplayType.textContent = display;
+reviewSurfaceType.textContent = surface;
+var totalPrice = calculateTotalPrice();
+reviewTotalPrice.textContent = totalPrice;
+console.log("Display Type: ", reviewDisplayType.textContent);
+console.log("Surface Type: ", reviewSurfaceType.textContent);
+console.log("Total Price: ", totalPrice);
+}
+
+      // Event listener for input fields
+      var inputFields = document.querySelectorAll('input[type="text"], input[type="date"]');
+      inputFields.forEach(function(input) {
+        input.addEventListener('change', function() {
+          updateChangedFields(input.name, input.value);
+          updateReviewSection();
+        });
+      });
+      var displaySelect = document.getElementById('display');
+displaySelect.addEventListener('change', function() {
+updateChangedFields('display', displaySelect.value);
+updateReviewSection();
+});
+
+var surfaceSelect = document.getElementById('surface');
+surfaceSelect.addEventListener('change', function() {
+updateChangedFields('surface', surfaceSelect.value);
+updateReviewSection();
+});
+function updateChangedFields(fieldName, value) {
+        var fieldIndex = changed_fields.findIndex(function(field) {
+          return field.name === fieldName;
+        });
+    
+        if (fieldIndex !== -1) {
+          changed_fields[fieldIndex].value = value;
+        } else {
+          changed_fields.push({ name: fieldName, value: value });
+        }
+      }
+
+       // Function to calculate the total price
+ function updateTotalPrice() {
+  var totalPrice = calculateTotalPrice();
+  document.getElementById('total-price').textContent = "Total Price: " + totalPrice + " tg";
+}
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('display').addEventListener('change', updateTotalPrice);
+    document.getElementById('surface').addEventListener('change', updateTotalPrice);
+    document.querySelectorAll('input[name="city"]').forEach(input => {
+        input.addEventListener('change', updateTotalPrice);
+    });
+});
+
+      function updateChangedFieldsAndUpdateReview() {
+var inputFields = document.querySelectorAll('input[type="text"], input[type="date"]');
+inputFields.forEach(function(input) {
+updateChangedFields(input.name, input.value);
+});
+
+var selectFields = document.querySelectorAll('select');
+selectFields.forEach(function(select) {
+updateChangedFields(select.name, select.value);
+});
+
+
+// Update the review section with the latest changes
+updateReviewSection();
+}
+
+function calculatePenaltyAmount(changedFields) {
+var penaltyAmount = 0;
+
+// Check if the changed fields include start date or end date
+if (changedFields.includes("Start Date") || changedFields.includes("End Date")) {
+penaltyAmount += 30000; // Penalty for changing start date or end date
+}
+
+// Check if the changed fields include region
+if (changedFields.includes("Region")) {
+penaltyAmount += 25000; // Penalty for changing region
+}
+
+// Check if the changed fields include display type or surface type
+if (changedFields.includes("Display Type") || changedFields.includes("Surface Type")) {
+penaltyAmount += 15000; // Penalty for changing display type or surface type
+}
+
+return penaltyAmount;
+}
+function updatePenaltyAmountDisplay(penaltyAmount) {
+// Update the display to show the penalty amount
+var penaltyDisplay = document.getElementById('penalty-amount');
+if (penaltyAmount > 0) {
+penaltyDisplay.textContent = "Penalty Amount: " + penaltyAmount + " tg";
+} else {
+penaltyDisplay.textContent = ""; // Hide the display if no penalty
+}
+}
+    </script>
+   <script>
+    const prices = {
+      "здания Дворца Спорта им. Б.Шолака": 200000, 
+      "Толе би - Ауэзова": 180000,
+      "Абая - Розыбакиева": 180000,
+      "Медео и ГЛК Шымбулак": 250000, 
+      "ТЦ ESENTAI": 350000,
+      "MEGA(Розыбакиева)": 220000,
+      "Арбат (ЦУМ)": 210000,
+      "Фитнес-клуб World class": 300000,
+      "АЗС (Royal Petrol, Helios)": 180000,
+      "Метрополитен Алматы": 240000,
+      "Абай-Алтынсарин": 190000,
+      "Коктем-1": 210000,
+      "Байзакова - Тимирязева": 200000,
+      "Жандосова - Сатпаева": 180000,
+      "Райымбека - Фурманова": 240000,
+      "Московская": 220000,
+      "Жибек Жолы - Толе би": 230000,
+      "Наурызбай батыра": 190000,
+      "Манаса - Достык": 200000,
+      "Кабанбай батыра - Масанчи": 220000,
+    };
+    
+    
+   
+function calculateTotalPrice() {
+  var checkboxes = document.querySelectorAll('input[name="city"]:checked');
+  var totalPrice = 0;
+  checkboxes.forEach(function(checkbox) {
+    // Get the price for the selected billboard
+    var billboardPrice = prices[checkbox.value];
+
+// Add the price of the selected billboard to the total price
+    totalPrice += billboardPrice;
+  });
+  var display = "{{ display }}";
+  var surface = "{{ surface }}";
+  document.getElementById('display').value = display;
+  document.getElementById('surface').value = surface;
+
+  checkboxes.forEach(function(checkbox) {
+    var billboardPrice = prices[checkbox.value];
+    // Adjust the price based on the display and surface types
+    if ((display === "single face" || display === "lamp posts") && surface === "vinyl") {
+      
+      // Single face or lamp posts and vinyl
+     totalPrice += 50000;
+      // Adjust the price accordingly
+    } else if ((display === "double face" || display === "interactive") && surface === "digital") {
+      // Double face or interactive and digital
+      totalPrice *= 2; // Double the price of the selected billboard
+    } 
+    else if ((display === "double face" || display === "interactive") && surface === "vinyl") {
+      // Double face or interactive and digital
+      totalPrice *= 2; // Double the price of the selected billboard
+    } 
+    else if ((display === "double face" || display === "interactive") && surface === "static") {
+      // Double face or interactive and digital
+      totalPrice *= 2; // Double the price of the selected billboard
+    } else if ((display === "single face" || display === "lamp posts") && surface === "static") {
+      // Single face or lamp posts and static
+      totalPrice += 60000;
+    } 
+  });
+  console.log("Display Type: ", display);
+  console.log("Surface Type: ", surface);
+  console.log("Total Price: ", totalPrice);
+
+  return totalPrice;
+}
+
+
+
+// Make sure to attach event listeners once the DOM is fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('display').addEventListener('change', updateTotalPrice);
+  document.getElementById('surface').addEventListener('change', updateTotalPrice);
+  document.querySelectorAll('input[name="city"]').forEach(input => {
+    input.addEventListener('change', updateTotalPrice);
+  });
+});
+
+
+        </script>
+       <script>
+       function submitForm() {
+    var totalPrice = calculateTotalPrice();
+    var penaltyAmount = calculatePenaltyAmount(changed_fields);
+    var form = document.getElementById('payment-form');
+    form.action = '?total-price=' + totalPrice + '&penalty-amount=' + penaltyAmount; // Include penalty amount in the form action
+    form.submit();
+}
+
+    </script>
+        
+              <link rel="stylesheet" href="{{ url_for('static', filename='js/orderr.js') }}">   
+              <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+              <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+              <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script> 
+             
+              
+  </body>
+</html>
 
