@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'><link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet">
+<style>
+  .card{
+    background-color:white;
+    margin-top: 20px;
+  }
+  table {
+    width: 95%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .card {
+    margin-left: 80px; 
+  }
+  thead {
+    padding: 12px 2%;
+    background-color: #2C3E50;
+    color: white;
+  }
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  tbody tr:hover {
+    background-color: #ddd;
+  }
+  .penalty-button {
+  background-color: #2C3E50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+</style>
+</head>
+
+<body>
+<header class="header">
+  <div class="logo-container"> 
+    <span href="{{ url_for('home') }}" class="logo-text">Happy Client</span>
+  </div>
+  <nav class="navbar">
+    <ul class="nav-links">
+      <li {% if active_page == 'loginmanager' %}class="active"{% endif %}><a href="{{ url_for('loginmanager') }}">Dashboard</a></li>
+      <li {% if active_page == 'orders' %}class="active"{% endif %}><a href="{{ url_for('orders') }}">Orders</a></li>
+      <li {% if active_page == 'calendar' %}class="active"{% endif %}><a href="{{ url_for('calendar') }}">Schedule</a></li>
+      <li {% if active_page == 'penaltymanager' %}class="active"{% endif %}><a href="{{ url_for('penaltymanager') }}">Penalty</a></li>
+      <li {% if active_page == 'dashboardmanager' %}class="active"{% endif %}><a href="{{ url_for('dashboardmanager') }}">Profile</a></li>
+    </ul>
+  </nav>
+  <div class="language-select">
+    <select>
+      <option value="en">English</option>
+      <option value="ru">Russian</option>
+      <option value="kz">Kazakh</option>
+    </select>
+  </div>
+</header>
+
+<div class="dashboard-container">
+  <div class="card">
+    <h1>Orders</h1>
+    {% for date, orders_group in grouped_orders.items() %}
+    <div class="date-header">
+      <br>
+      <h2>{{ date.strftime('%d-%m-%Y') }}</h2>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Company Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Region</th>
+            <th>Display Type</th>
+            <th>Surface Type</th>
+            <th>Submitted Date</th> 
+            <th>Penalty</th> 
+            <th>Status</th>
+            <th>Confirm</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders_group %}
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.company_name }}</td>
+            <td>{{ order.start_date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ order.end_date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ order.region }}</td>
+            <td>{{ order.display_type }}</td>
+            <td>{{ order.surface_type }}</td>
+            <td>{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
+            <td>{{ order.penalty }}</td>
+            <td>{{order.penalty_status}}</td>
+            <td>
+                {% if order.penalty_status == 'accepted' %}
+                <span style="color: green;">Penalty Accepted</span>
+                {% elif order.penalty_status == 'rejected' %}
+                <span style="color: red;">Penalty Rejected</span>
+                {% else %}
+                {% if order.penalty_status != 'accepted' %}
+                    <form action="{{ url_for('penaltymanager') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
+                        <button type="submit" class="penalty-button" name="action" value="acceptpayment">Accept</button>
+                        <button type="submit" class="penalty-button" name="action" value="rejectpayment">Reject</button>
+                    </form>
+                {% endif %}
+            {% endif %}  
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+     
+    </div>
+    {% endfor %}
+    
+  </div>
+</div>
+
+<script>
+  function changeOrder(order_id) {
+      window.location.href = "/changed_order/" + order_id;
+  }
+  function payOrder(order_id) {
+      window.location.href = "/payment/" + order_id;
+  }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.action-form').forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            var orderId = this.dataset.orderId; 
+            var action = this.querySelector('[name="action"]').value; 
+            var formData = new FormData(this); 
+            formData.append('order_id', orderId);
+            formData.append('action', action);
+    
+            fetch('/penaltymanager', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    console.error('Error submitting form');
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+            });
+        });
+    });
+});
+
+    </script>
+    
+
+</body>
+</html>
 
