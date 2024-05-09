@@ -1,1 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hembo Tingor Profile</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/filepond/dist/filepond.css">
+<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css">
+</head>
+<style>
+ body {
+    background-color: #f9f9fa
+}
+
+.padding {
+    padding: 3rem !important
+}
+
+.user-card-full {
+    overflow: hidden;
+}
+
+.card {
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 20px 0 rgba(69,90,100,0.08);
+    box-shadow: 0 1px 20px 0 rgba(69,90,100,0.08);
+    border: none;
+    margin-bottom: 30px;
+    width: 800px;
+    height: auto;
+    position: relative;
+    left: 23%;
+    top: 10%;
+    font-family: Georgia, 'Times New Roman', Times, serif ;
+    font-size: 50px;
+    text-align: center;
+    margin-left: 50px;
+    
+}
+
+.m-r-0 {
+    margin-right: 0px;
+}
+
+.m-l-0 {
+    margin-left: 0px;
+}
+
+.user-card-full .user-profile {
+    border-radius: 5px 0 0 5px;
+}
+
+.bg-c-lite-green {
+        background: -webkit-gradient(linear, left top, right top, from(#2a7bcb), to(#2C3E50));
+    background: linear-gradient(to right, #2a7bcb, #2C3E50);
+}
+
+.user-profile {
+    padding: 20px 0;
+}
+
+.card-block {
+    padding: 1.25rem;
+}
+
+.m-b-25 {
+    margin-bottom: 25px;
+}
+
+.img-radius {
+    border-radius: 5px;
+}
+.edit-profile-button{
+  margin-top: 20px;
+}
+
+ 
+h6 {
+    font-size: 14px;
+}
+
+.card .card-block p {
+    line-height: 25px;
+}
+
+@media only screen and (min-width: 1400px){
+p {
+    font-size: 14px;
+}
+}
+
+.card-block {
+    padding: 1.25rem;
+}
+
+.b-b-default {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.m-b-20 {
+    margin-bottom: 20px;
+}
+
+.p-b-5 {
+    padding-bottom: 5px !important;
+}
+
+.card .card-block p {
+    line-height: 25px;
+}
+
+.m-b-10 {
+    margin-bottom: 10px;
+}
+
+.text-muted {
+    color: #919aa3 !important;
+}
+
+.b-b-default {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.f-w-600 {
+    font-weight: 600;
+}
+
+.m-b-20 {
+    margin-bottom: 20px;
+}
+
+.m-t-40 {
+    margin-top: 20px;
+}
+
+.p-b-5 {
+    padding-bottom: 5px !important;
+}
+
+.m-b-10 {
+    margin-bottom: 10px;
+}
+
+.m-t-40 {
+    margin-top: 20px;
+}
+
+.user-card-full .social-link li {
+    display: inline-block;
+}
+
+.user-card-full .social-link li a {
+    font-size: 20px;
+    margin: 0 10px 0 0;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 10px;
+    background-color: black; 
+    
+  }
+  .logo-container {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+  }
+  
+  .profile-icon {
+    color: white;
+    font-size: 30px;
+    text-decoration: none;
+  }
+  .profile-icon:hover {
+    color: #2a7bcb;
+  }
+  .logo-text {
+    font-size: 27px;
+    font-weight: 550;
+color: white;
+text-decoration: none;
+margin-top: 5%;
+font-family: "Poppins", sans-serif;
+  }
+  .navbar {
+    text-align: center;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0; 
+    display: inline-block; 
+
+}
+
+.nav-links li {
+    display: inline;
+    margin-right: 20px; 
+}
+
+.nav-links a {
+    text-decoration: none; 
+    font-size: 19px; 
+    color: white;
+    font-weight: bold; 
+}
+
+.nav-links a:hover {
+    color: #2a7bcb; 
+}
+@media (max-width: 600px) {
+    .nav-links li {
+        display: block; 
+        text-align: center; 
+        margin: 10px 0; 
+    }
+}
+
+
+
+
+#total-price {
+  text-align: center;
+  font-size: 1.5em; 
+  padding: 10px; 
+  border: 2px solid #ccc;
+  border-radius: 10px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  width: 90%;
+}
+
+#total-price:hover {
+  transform: scale(1.05);
+}
+
+.language-select select {
+  width: 110px;
+  height: 35px;
+  color: black; 
+  font-size: 18px; 
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  margin-top: 3%;
+  border-radius: 10px;
+  margin-left: -20px;
+  }
+  .language-select select option {
+  color: black; 
+  }
+  .footer{
+    font-family: 'Play', sans-serif;
+    position:static;
+    left: 0;
+    top: 800px;
+    width: 100%;
+    background-color: #000; 
+    text-align: center;
+    padding: 30px 0; 
+    }
+    .footer .row{
+    width:100%;
+    margin:1% 0%;
+    padding:0.6% 0%;
+    color:gray;
+    font-size:0.8em;
+    }
+    
+    .footer .row a{
+    text-decoration:none;
+    color:gray;
+    transition:0.5s;
+    }
+    
+    .footer .row a:hover{
+    color:#fff;
+    }
+    
+    .footer .row ul{
+    width:100%;
+    }
+    
+    .footer .row ul li{
+    display:inline-block;
+    margin:0px 30px;
+    }
+    
+    .footer .row a i{
+    font-size:2em;
+    margin:0% 1%;
+    }
+    
+    @media (max-width:720px){
+    .footer{
+    text-align:left;
+    padding:5%;
+    }
+    .footer .row ul li{
+    display:block;
+    margin:10px 0px;
+    text-align:left;
+    }
+    .footer .row a i{
+    margin:0% 3%;
+    }
+    }
+    .button {
+    width: 200px;
+    height: 50px;
+    background: #2C3E50;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 30px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px;
+    font-size: 17px;
+    text-decoration: none;
+    position: relative;
+    margin: auto;
+}
+
+ .button:hover, .button:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #2098ce;
+}
+
+.filepond--drop-label {
+	color: #4c4e53;
+}
+
+.filepond--label-action {
+	text-decoration-color: #babdc0;
+}
+
+.filepond--panel-root {
+	background-color: #edf0f4;
+}
+
+.filepond--root {
+	width:170px;
+	margin: 0 auto;
+}
+
+</style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container"> 
+          <span href="{{ url_for('home') }}"  class="logo-text">Happy Client</span>
+        </div>
+        <nav class="navbar">
+          <ul class="nav-links">
+            <li {% if active_page == 'loginmanager' %}class="active"{% endif %}><a href="{{ url_for('loginmanager') }}">Dashboard</a></li>
+            <li {% if active_page == 'orders' %}class="active"{% endif %}><a href="{{ url_for('orders') }}">Orders</a></li>
+            <li {% if active_page == 'calendar' %}class="active"{% endif %}><a href="{{ url_for('calendar') }}">Schedule</a></li>
+            <li {% if active_page == 'penaltydmanager' %}class="active"{% endif %}><a href="{{ url_for('penaltymanager') }}">Penalty</a></li>
+            <li  {% if active_page == 'dashboardmanager' %}class="active"{% endif %}><a href="{{ url_for('dashboardmanager') }}">Profile</a></li>
+          
+          </ul>
+          </ul>
+        </nav>
+    
+        <div class="language-select">
+          <select>
+              <option value="en" class="select option">English</option>
+              <option value="ru">Русский</option>
+              <option value="kz">Қазақша</option>
+          </select>
+        </div>
+    </header>
+    <div class="page-content page-container" id="page-content">
+        <div class="padding">
+            <div class="row container d-flex justify-content-center">
+    <div class="col-xl-6 col-md-12">
+                                                    <div class="card user-card-full">
+                                                        <div class="row m-l-0 m-r-0">
+                                                            <div class="col-sm-4 bg-c-lite-green user-profile">
+                                                                <div class="card-block text-center text-white">
+                                                                    <div class="m-b-25">
+                                                                        <input type="file" 
+                                                                        class="filepond"
+                                                                        name="filepond"
+                                                                        accept="image/png, image/jpeg, image/gif"/>
+                                                                    </div>
+                                                                    <h6 class="f-w-600" style="font-size: 30px;">{{ name }} {{ surname }}</h6>
+                                                                    <p style="font-size: 25px;">{{ username }}</p>
+                                                                    <i class=" mdi mdi-square-edit-outline feather icon-edit m-t-10 f-16"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-8">
+                                                                <div class="card-block">
+                                                                    <h6 class="m-b-20 p-b-5 b-b-default f-w-600" style="font-size: 20px;">Information</h6>
+                                                                    <div class="row">
+                                                                        <div class="col-sm-6">
+                                                                            <p class="m-b-10 f-w-600" style="font-size: 20px;">Email</p>
+                                                                            <h6 class="text-muted f-w-400" style="font-size: 20px; margin-bottom: 10px;">{{ email }}</h6>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <p class="m-b-10 f-w-600" style="font-size: 20px;">Phone</p>
+                                                                            <h6 class="text-muted f-w-400" style="font-size: 20px;">{{ phone_number }}</h6>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="edit-profile-button">
+                                                                        <a href="{{ url_for('edit_profile') }}" class="button">Edit Profile</a>
+                                                                      </div>
+                                                                    <ul class="social-link list-unstyled m-t-40 m-b-10">
+                                                                        <li><a href="#!" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="facebook" data-abc="true"><i class="mdi mdi-facebook feather icon-facebook facebook" aria-hidden="true"></i></a></li>
+                                                                        <li><a href="#!" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="twitter" data-abc="true"><i class="mdi mdi-twitter feather icon-twitter twitter" aria-hidden="true"></i></a></li>
+                                                                        <li><a href="#!" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="instagram" data-abc="true"><i class="mdi mdi-instagram feather icon-instagram instagram" aria-hidden="true"></i></a></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                 </div>
+                                                    </div>
+                                                </div>
+                                                <footer>
+                                                    <div class="footer">
+                                                    <div class="row">
+                                                    <a href="#"><i class="fa fa-facebook"></i></a>
+                                                    <a href="#"><i class="fa fa-instagram"></i></a>
+                                                    <a href="#"><i class="fa fa-youtube"></i></a>
+                                                    <a href="#"><i class="fa fa-twitter"></i></a>
+                                                    </div>
+                                                    
+                                                    <div class="row">
+                                                    <ul>
+                                                    <li><a href="#home">Home</a></li>
+                                                    <li><a href="#service">Our Services</a></li>
+                                                    <li><a href="#contain-h2">About us</a></li>
+                                                    <li><a href="#contacts">Contact us</a></li>
+                                                    </ul>
+                                                    </div>
+                                                    
+                                                    <div class="row">
+                                                   © 2024 | SDU | All rights reserved
+                                                    </div>
+                                                    </div>
+                                                    </footer>
+                                                    <script>
+                                                        FilePond.registerPlugin(
+                                                            FilePondPluginFileValidateType,
+                                                            FilePondPluginImageExifOrientation,
+                                                            FilePondPluginImagePreview,
+                                                            FilePondPluginImageCrop,
+                                                            FilePondPluginImageResize,
+                                                            FilePondPluginImageTransform
+                                                        );
+                                                        FilePond.create(
+                                                            document.querySelector('input.filepond'),
+                                                            {
+                                                                labelIdle: `Drag & Drop your picture or <span class="filepond--label-action">Browse</span>`,
+                                                                imagePreviewHeight: 170,
+                                                                imageCropAspectRatio: '1:1',
+                                                                imageResizeTargetWidth: 200,
+                                                                imageResizeTargetHeight: 200,
+                                                                stylePanelLayout: 'compact circle',
+                                                                styleLoadIndicatorPosition: 'center bottom',
+                                                                styleProgressIndicatorPosition: 'right bottom',
+                                                                styleButtonRemoveItemPosition: 'left bottom',
+                                                                styleButtonProcessItemPosition: 'right bottom',
+                                                            }
+                                                        );
+                                                    </script>
+</body>
+</html>
 
