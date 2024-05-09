@@ -1,1 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/orderhistory.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet">
+<style>
+.pagination {
+    text-align: center;
+    margin-top: 20px; 
+}
+
+.page-link {
+    margin: 0 5px; 
+    font-size: 25px;
+    color: #007bff; 
+    text-decoration: none;
+}
+
+.page-link:hover {
+    text-decoration: underline;
+}
+
+.page-link.active {
+    color: red; 
+    font-weight: bold; 
+}
+
+</style> 
+</head>
+
+<body>
+<header class="header">
+    <div class="logo-container"> 
+        <a href="{{ url_for('home') }}" class="logo-text">Happy Client</a>
+    </div>    
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li {% if active_page == 'loginclient' %}class="active"{% endif %}><a href="{{ url_for('loginclient') }}">Dashboard</a></li>
+            <li {% if active_page == 'profile' %}class="active"{% endif %}><a href="{{ url_for('profile') }}">Order to billboard</a></li>
+            <li {% if active_page == 'orderhistory' %}class="active"{% endif %}><a href="{{ url_for('orderhistory') }}">Order history</a></li>
+            <li {% if active_page == 'penalty' %}class="active"{% endif %}><a href="{{ url_for('penalty') }}">Penalty</a></li>
+            <li {% if active_page == 'dashboard' %}class="active"{% endif %}><a href="{{ url_for('dashboard') }}">Profile</a></li>
+        </ul>
+    </nav>
+    <div class="language-select">
+        <select>
+            <option value="en" class="select option">English</option>
+            <option value="ru">Русский</option>
+            <option value="kz">Қазақша</option>
+        </select>
+    </div>
+</header>
+
+<div class="dashboard-container">
+   <div class="card">  
+            <h1>Order history</h1>
+            <br>
+          
+            <table>
+                <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Company name</th>
+                      <th>Billboard Info</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Region</th>
+                      <th>Display Type</th>
+                      <th>Surface Type</th>
+                      <th>Submitted Date</th> 
+                      <th>Option</th> 
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                  {% for date, orders_group in grouped_orders.items() %}
+                    {% for order in orders_group %}
+                        <tr>
+                          <td>{{ order.id }}</td>
+                          <td>{{ order.company_name }}</td>
+                          <td>{{ order.billboard_info }}</td>
+                          <td>{{ order.start_date.strftime('%d-%m-%Y') }}</td>
+                          <td>{{ order.end_date.strftime('%d-%m-%Y') }}</td>
+                          <td>{{ order.region }}</td>
+                          <td>{{ order.display_type or 'N/A' }}</td>
+                          <td>{{ order.surface_type or 'N/A' }}</td>
+                          <td>{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
+                          <td>
+                            <button class="change-order-button" onclick="changeOrder('{{ order.id }}')">Change</button> 
+                            <button class="pay-order-button" onclick="payOrder('{{ order.id }}')">Payment</button>
+                          </td> 
+                        </tr>
+                    {% endfor %}
+                    {% endfor %}
+        
+                </tbody>
+            </table>
+       
+        <div class="pagination" id="pagination-container"></div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+  function changeOrder(order_id) {
+      window.location.href = "/changed_order/" + order_id;
+  }
+  function payOrder(order_id) {
+      window.location.href = "/payment/" + order_id;
+  }
+</script>
+<script>
+  $(document).ready(function() {
+      var rowsPerPage = 5;
+      var tableRows = $('.dashboard-container #orders-table-body tr');
+      var totalPages = Math.ceil(tableRows.length / rowsPerPage);
+      
+      if (totalPages == 0) {
+          $('.pagination').hide(); 
+          $('.card').hide();
+      } else {
+          $('#pagination-container').append($('<a href="#" class="page-link special"><</a>').data('page', 1));
+          
+          for (var i = 0; i < totalPages; i++) {
+              var pageNumber = i + 1;
+              var pageLink = $('<a href="#" class="page-link">' + pageNumber + '</a>');
+              pageLink.data('page', pageNumber);
+              $('#pagination-container').append(pageLink);
+          }
+          $('#pagination-container').append($('<a href="#" class="page-link special">></a>').data('page', totalPages));
+  
+          $('.page-link').click(function() {
+              var currentPage = $(this).data('page');
+              var startIndex = (currentPage - 1) * rowsPerPage;
+              var endIndex = startIndex + rowsPerPage;
+              $('#orders-table-body tr').hide();
+              var rowsToShow = tableRows.slice(startIndex, endIndex);
+              rowsToShow.show();
+
+              $('.page-link').removeClass('active');
+              $(this).addClass('active');
+              
+              return false;
+          });
+
+          $('.page-link:first').click();
+      }
+  });
+</script>
+</body>
+</html>
 
