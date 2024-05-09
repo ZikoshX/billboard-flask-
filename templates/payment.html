@@ -1,1 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Page</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/payment.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+</head>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    max-width: 600px;
+    height: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  h2 {
+    margin-top: 0;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    font-weight: bold;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-top: 5px;
+    font-size: 18px;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  #qrCodeContainer {
+    margin-top: 20px;
+  }
+  .paid-button {
+    background-color: #4682B4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 70px;
+    margin-top: 140px;
+}
+
+.paid-button:hover {
+    background-color: #007bff;
+}
+.paid-button {
+    /* Ваши текущие стили */
+    font-size: 18px; /* Новый размер кнопки */
+}
+.qr-code-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30vh; /* Устанавливаем высоту контейнера на весь экран */
+    margin: 50; /* Убираем внешние отступы */
+    padding: 10; /* Убираем внутренние отступы */
+}
+
+
+  
+</style>
+<body>
+    
+<div class="container">
+  <h2>Payment Details</h2>
+  <form id="paymentForm">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" value="{{ name }}" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" value="{{ email }}" required>
+    </div>
+    <div class="form-group">
+      <label for="amount">Amount:</label>
+      <input type="text" id="price" name="price" value="{{ '{:,.0f}'.format(price) }} tg" readonly required>
+    </div>
+  </form>
+  <div id="qrCodeContainer" class="qr-code-container">
+    <img src="{{ url_for('static', filename='images/qr.jpg') }}" alt="QR Code" style="max-width: 45%; height: auto; margin-top: 140px;">
+</div>
+<form method="post" action="{{ url_for('payment', order_id=order.id) }}">
+  <button class="paid-button" onclick="redirectToConfirmation('{{ order.id }}')">Paid</button>
+</form>
+
+</div>
+<script>
+  function validateForm() {
+    var name = document.getElementById("name").value;
+    var email = document.getElementById("email").value;
+    var nameError = document.getElementById("nameError");
+    var emailError = document.getElementById("emailError");
+    
+    nameError.textContent = "";
+    emailError.textContent = "";
+    
+    if (name.trim() == "") {
+      nameError.textContent = "Name is required";
+      return false;
+    }
+    
+    if (!isValidEmail(email)) {
+      emailError.textContent = "Invalid email format";
+      return false;
+    }
+    
+    return true;
+  }
+  
+  function isValidEmail(email) {
+    // Regular expression for validating email format
+    var emailRegex = /\S+@\S+\.\S+/;
+    return emailRegex.test(email);
+  }
+</script>
+<script>
+  function redirectToConfirmation(orderId) {
+      // Redirect to the confirmation page with the order ID
+      window.location.href = "/conf/" + orderId;
+  }
+</script>
+
+
+
+
+</body>
+</html>
 
