@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/orderhistory.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+    <style>
+.penalty-amount {
+    color: red;
+}
 
+    </style>
+</head>
+
+<body>
+<header class="header">
+    <div class="logo-container"> 
+        <a href="{{ url_for('home') }}" class="logo-text">Happy Client</a>
+    </div>    
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li {% if active_page == 'loginclient' %}class="active"{% endif %}><a href="{{ url_for('loginclient') }}">Dashboard</a></li>
+            <li {% if active_page == 'profile' %}class="active"{% endif %}><a href="{{ url_for('profile') }}">Order to billboard</a></li>
+            <li {% if active_page == 'orderhistory' %}class="active"{% endif %}><a href="{{ url_for('orderhistory') }}">Order History</a></li>
+            <li {% if active_page == 'penalty' %}class="active"{% endif %}><a href="{{ url_for('penalty') }}">Penalty</a></li>
+            <li {% if active_page == 'dashboard' %}class="active"{% endif %}><a href="{{ url_for('dashboard') }}">Profile</a></li>
+        </ul>
+    </nav>
+    <div class="language-select">
+        <select>
+            <option value="en" class="select option">English</option>
+            <option value="ru">Русский</option>
+            <option value="kz">Қазақша</option>
+        </select>
+    </div>
+</header>
+
+<div class="dashboard-container">
+    <div class="card">  
+        <h1>Penalty</h1>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Billboard Info</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Region</th>
+                    <th>Display Type</th>
+                    <th>Surface Type</th>
+                    <th>Submitted Date</th> 
+                    <th>Penalty</th> 
+                    <th>Penalty status</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders_group %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.billboard_info }}</td>
+                        <td{% if 'Start Date' in changed_fields %} class="changed-info"{% endif %}>{{ order.start_date.strftime('%d-%m-%Y') }}</td>
+                        <td{% if 'End Date' in changed_fields %} class="changed-info"{% endif %}>{{ order.end_date.strftime('%d-%m-%Y') }}</td>
+                        <td{% if 'Region' in changed_fields %} class="changed-info"{% endif %}>{{ order.region }}</td>
+                        <td{% if 'Display Type' in changed_fields %} class="changed-info"{% endif %}>{{ order.display_type or 'N/A' }}</td>
+                        <td{% if 'Surface Type' in changed_fields %} class="changed-info"{% endif %}>{{ order.surface_type or 'N/A' }}</td>
+                        <td>{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
+                        <td class="penalty-amount">{{ order.penalty }} tg</td>
+                        <td>{{ order.penalty_status }}</td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function changeOrder(order_id) {
+        window.location.href = "/changed_order/" + order_id;
+    }
+</script>
+
+</body>
+</html>
