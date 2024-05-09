@@ -22,17 +22,16 @@ from itertools import groupby
 from operator import attrgetter
 from sqlalchemy import desc
 from flask import session, current_app
-import traceback
+from flask_migrate import Migrate
 
 app=Flask(__name__)
 
 UPLOAD_FOLDER = 'path/to/upload/folder'
 
-# Check if the upload folder exists, and create it if it doesn't
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-# Update the Flask application configuration with the upload folder
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/add/<int:num1>/<int:num2>')
@@ -62,17 +61,33 @@ flow = Flow.from_client_secrets_file(
     redirect_uri="http://127.0.0.1:5000/google-login"
 )
 
-DB_HOST='localhost'
-DB_NAME='sampledb'
-DB_USER='postgres'
-DB_PASS='13579'
+os.environ['POSTGRES_USER'] = "default"
+os.environ['POSTGRES_PASSWORD'] = "s0vgfPC1IxQn"
+os.environ['POSTGRES_HOST'] = "ep-black-bar-a4scl55z-pooler.us-east-1.aws.neon.tech"
+os.environ['POSTGRES_DATABASE'] = "verceldb"
 
-conn=psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}'
+#conn=psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+conn = psycopg2.connect(
+    dbname=os.environ['POSTGRES_DATABASE'],
+    user=os.environ['POSTGRES_USER'],
+    password=os.environ['POSTGRES_PASSWORD'],
+    host=os.environ['POSTGRES_HOST']
+)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{}:{}@{}/{}'.format(
+    os.environ.get('POSTGRES_USER'),
+    os.environ.get('POSTGRES_PASSWORD'),
+    os.environ.get('POSTGRES_HOST'),
+    os.environ.get('POSTGRES_DATABASE')
+)
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 class Manager(db.Model):
+    __tablename__ = 'manager'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     lastname = db.Column(db.String(50))
@@ -86,6 +101,7 @@ class Manager(db.Model):
         return f'<Manager {self.username}>'
 
 class Posts(db.Model):
+    __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     body = db.Column(db.Text)
@@ -97,6 +113,7 @@ class Posts(db.Model):
         return f'<Post {self.title}>'
     
 class Users(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     lastname = db.Column(db.String(50))
@@ -122,6 +139,7 @@ class MyAdminIndexView(AdminIndexView):
     def is_visible(self):
         return False
 class Orders(db.Model):
+    __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String(255), nullable=False)
     billboard_info = db.Column(db.String(255))
@@ -144,6 +162,7 @@ class Orders(db.Model):
         return f"<Order(company_name='{self.billboard_info}', start_date='{self.start_date}', end_date='{self.end_date}')>"
 
 class Payment(db.Model):
+    __tablename__ = 'payment'
     id = db.Column(db.Integer, primary_key=True)
     card_number_encrypted = db.Column(db.String(16))
     cardholder_name = db.Column(db.String(255))
@@ -364,29 +383,63 @@ def loginmanager():
     # GET request or invalid login attempt, render login form
     return render_template('loginmanager.html', active_page=active_page)
 
+@app.route('/chat')
+def chat():
+    active_page = 'chat'
+    return render_template('chat.html', active_page=active_page)
+
+@app.route('/manager_settings', methods=['POST','GET'])
+def manager_settings():
+    active_page='manager_settings'
+    return render_template('manager_settings.html', active_page=active_page)
+
+@app.route('/chatmanager')
+def chatmanager():
+    active_page = 'chatmanager'
+    return render_template('chatmanager.html', active_page=active_page)
+
 @app.route('/calendar')
 def calendar():
     active_page='calendar'
     return render_template('calendar.html', active_page=active_page)
 
 
-@app.route('/orderclient', methods=['POST','GET'])
-def orderclient():
+@app.route('/help')
+def help():
+    return render_template('help.html')
+
+@app.route('/services')
+def services():
+    return render_template('services.html')
+
+@app.route('/settings', methods=['POST', 'GET'])
+def settings():
+    active_page='settings'
+    return render_template('settings.html', active_page=active_page)
+
+@app.route('/profile', methods=['POST','GET'])
+def profile():
     order_details = session.get('order_details')
     name = session.get('name')
     surname = session.get('lastname')
     active_page='profile'
     
-    return render_template('orderclient.html', name=name, surname=surname, active_page=active_page)
+    return render_template('profile.html', name=name, surname=surname, active_page=active_page)
+   
 
+@app.route('/next_order')
+def next_order():
+    return render_template('next_order.html')
 
 @app.route('/changed_order/<int:order_id>', methods=['POST', 'GET'])
 def changed_order(order_id):
+    # Fetch the order details from the database
     name = session.get('name')
     surname = session.get('lastname')
     order = Orders.query.get(order_id)
 
     if request.method == 'POST':
+        # Retrieve form data
         company_name = request.form['company-name']
         billboard_info = request.form['billboard-info']
         start_date = request.form['Start']
@@ -815,9 +868,8 @@ def callback():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     try:
-        if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        if request.method == 'POST':
             name = request.form['name']
             lastname = request.form['lastname']
             username = request.form['username']
@@ -825,11 +877,11 @@ def signup():
             email = request.form['email']
             phone_number = request.form['phone_number']
 
-            _hashed_password = generate_password_hash(password)
+            hashed_password = generate_password_hash(password)
 
-            cursor.execute('SELECT * FROM users WHERE username=%s', (username,))
-            account = cursor.fetchone()
-            if account:
+            # Check if the username or email already exists
+            existing_user = Users.query.filter((Users.username == username) | (Users.email == email)).first()
+            if existing_user:
                 flash('Account already exists!')
             elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
                 flash('Invalid email address!')
@@ -842,24 +894,30 @@ def signup():
             elif not phone_number.isdigit():
                 flash('Phone number must contain only digits!')
             else:
-                # Account doesn't exist and the form data is valid, now insert new account into users table
-                cursor.execute("INSERT INTO users (name,lastname, username, password, email, phone_number) VALUES (%s,%s,%s,%s,%s,%s)", (name, lastname, username, _hashed_password, email, phone_number))
-                conn.commit()
+                # Create a new user object and add it to the database
+                new_user = Users(
+                    name=name,
+                    lastname=lastname,
+                    username=username,
+                    password=hashed_password,
+                    email=email,
+                    phone_number=phone_number
+                )
+                db.session.add(new_user)
+                db.session.commit()
                 flash('You have successfully registered!')
-        elif request.method == 'POST':
-            flash('Please fill out the form!')
+
     except Exception as e:
-        conn.rollback()
+        db.session.rollback()
         flash('An error occurred while processing your request. Please try again later.')
         # Log the exception details for debugging purposes
-        traceback.print_exc()  # Print the traceback to the console
-    finally:
-        cursor.close()
+        print(e)
+
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    #cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
         password = request.form['password']
