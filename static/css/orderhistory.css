@@ -1,1 +1,139 @@
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 10px;
+  background-color: black; 
+  
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.profile-icon {
+  color: white;
+  font-size: 30px;
+  text-decoration: none;
+}
+.profile-icon:hover {
+  color: #2a7bcb;
+}
+.logo-text {
+  font-size: 27px;
+  font-weight: 550;
+color: white;
+text-decoration: none;
+margin-top: 5%;
+font-family: "Poppins", sans-serif;
+}
+.navbar {
+  text-align: center; /* Centers the navigation bar */
+}
+
+.nav-links {
+  list-style: none; /* Removes bullet points from the list */
+  padding: 0; /* Removes padding around the list */
+  margin: 0; /* Removes margin around the list */
+  display: inline-block; /* Allows the list to be aligned with other elements */
+
+}
+
+.nav-links li {
+  display: inline; /* Displays the list items inline */
+  margin-right: 20px; /* Adds space between the items */
+}
+
+.nav-links a {
+  text-decoration: none; /* Removes underline from links */
+  font-size: 19px; /* Sets a readable default font size */
+  color: white; /* Default color for links */
+  font-weight: bold; /* Makes font bold */
+}
+
+.nav-links a:hover {
+  color: #2a7bcb; /* Changes color on hover */
+}
+@media (max-width: 600px) {
+  .nav-links li {
+      display: block; /* Stacks the links vertically */
+      text-align: center; /* Centers the links */
+      margin: 10px 0; /* Adds vertical space between links */
+  }
+}
+.language-select select {
+  width: 110px;
+  height: 35px;
+  color: black; 
+  font-size: 18px; /* adjust as needed */
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  margin-top: 3%;
+  border-radius: 10px;
+  margin-left: -20px;
+  }
+  .language-select select option {
+  /* Sets the background of the dropdown items to black */
+  color: black; /* Sets the text color of the dropdown items to white */
+  }
+/* Table Styling */
+.card{
+    background-color:white;
+    margin-top: 20px;
+}
+table {
+  width: 95%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  
+}
+.card {
+  margin-left: 80px; 
+}
+
+thead {
+  padding: 12px 2%;
+  background-color: #2C3E50;
+  color: white;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+  background-color: #ddd;
+}
+
+.change-order-button {
+  background-color: #2C3E50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.pay-order-button {
+  background-color: #2C3E50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.change-button:hover {
+  background-color: #1a252f;
+}
+.red-text {
+  color: red;
+}
+
