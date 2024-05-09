@@ -1,1 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet">
+    <style>
+      .card {
+          background-color:white;
+          margin-top: 20px;
+      }
+      table {
+          width: 95%;
+          border-collapse: collapse;
+          margin-top: 20px;
+      }
+      .card {
+          margin-left: 80px; 
+      }
+      thead {
+          padding: 12px 2%;
+          background-color: #2C3E50;
+          color: white;
+      }
+      th, td {
+          padding: 12px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+      }
+      tbody tr:nth-child(even) {
+          background-color: #f2f2f2;
+      }
+      tbody tr:hover {
+          background-color: #ddd;
+      }
+      .paid-button {
+          background-color: #2C3E50;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          cursor: pointer;
+          border-radius: 4px;
+      }
+      .pagination {
+      text-align: center;
+      margin-top: 20px;
+  }
+  .page-link {
+      margin: 0 5px;
+      font-size: 20px; 
+      text-decoration: none;
+  }
+  .page-link.special {
+      font-size: 24px; 
+  }
+  .page-link.active {
+      color: red;
+  }
+  td.submitted-date {
+      color: blue;
+  }
+  td.payment-status.paid, 
+  td.payment-status.accepted {
+      color: green; 
+  }
+  
+  td.payment-status.unpaid {
+      color: orange; 
+  }
+  
+  td.payment-status.rejected {
+      color: red; 
+  }
+  </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container"> 
+            <span href="{{ url_for('home') }}"  class="logo-text">Happy Client</span>
+        </div>
+        <nav class="navbar">
+            <ul class="nav-links">
+                <li {% if active_page == 'loginmanager' %}class="active"{% endif %}><a href="{{ url_for('loginmanager') }}">Dashboard</a></li>
+                <li {% if active_page == 'orders' %}class="active"{% endif %}><a href="{{ url_for('orders') }}">Orders</a></li>
+                <li {% if active_page == 'calendar' %}class="active"{% endif %}><a href="{{ url_for('calendar') }}">Schedule</a></li>
+                <li {% if active_page == 'penaltydmanager' %}class="active"{% endif %}><a href="{{ url_for('penaltymanager') }}">Penalty</a></li>
+                <li  {% if active_page == 'dashboardmanager' %}class="active"{% endif %}><a href="{{ url_for('dashboardmanager') }}">Profile</a></li>
+            </ul>
+        </nav>
+        <div class="language-select">
+            <select>
+                <option value="en">English</option>
+                <option value="ru">Russian</option>
+                <option value="kz">Kazakh</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+      <div class="card category-table" id="all-orders">
+                  <h1>Orders</h1>
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>Order ID</th>
+                              <th>Company Name</th>
+                              <th>Billboard Info</th>
+                              <th>Start Date</th>
+                              <th>End Date</th>
+                              <th>Region</th>
+                              <th>Display Type</th>
+                              <th>Surface Type</th>
+                              <th>Submitted Date</th> 
+                              <th>Status</th>
+                              <th>Confirm</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for date, orders_group in grouped_orders.items() %}
+                         
+                          {% for order in orders_group %}
+                          <tr>
+                              <td>{{ order.id }}</td>
+                              <td>{{ order.company_name }}</td>
+                              <td>{{ order.billboard_info }}</td>
+                              <td>{{ order.start_date.strftime('%Y-%m-%d') }}</td>
+                              <td>{{ order.end_date.strftime('%Y-%m-%d') }}</td>
+                              <td>{{ order.region }}</td>
+                              <td>{{ order.display_type }}</td>
+                              <td>{{ order.surface_type }}</td>
+                              <td class="submitted-date">{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
+                              <td class="payment-status {% if order.payment_status == 'paid' %}paid{% elif order.payment_status == 'rejected' %}rejected{% else %}unpaid{% endif %}">
+                                {{ order.payment_status }}
+                            </td>
+                              <td>
+                                  {% if order.payment_status == 'paid' %}
+                                  <span style="color: green;">Payment Accepted</span>
+                                  {% elif order.payment_status == 'rejected' %}
+                                  <span style="color: red;">Payment Rejected</span>
+                                  {% else %}
+                                  {% if order.payment_status != 'paid' %}
+                                  <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
+                                      <button type="submit" class="paid-button" name="action" value="accept">Accept</button>
+                                      <button type="submit" class="paid-button" name="action" value="reject">Reject</button>
+                                  </form>
+                                  {% endif %}
+                                  {% endif %}
+                              </td>
+                          </tr>
+                          {% endfor %}
+                          {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+
+
+              <div class="card category-table" id="accepted-orders" style="display: none;">
+                <h1>Accepted Orders</h1>
+                <table>
+                  <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Company Name</th>
+                        <th>Billboard Info</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Region</th>
+                        <th>Display Type</th>
+                        <th>Surface Type</th>
+                        <th>Submitted Date</th> 
+                        <th>Status</th>
+                        <th>Confirm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for date, orders_group in grouped_orders.items() %}
+                   
+                    {% for order in orders_group %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.company_name }}</td>
+                        <td>{{ order.billboard_info }}</td>
+                        <td>{{ order.start_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ order.end_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ order.region }}</td>
+                        <td>{{ order.display_type }}</td>
+                        <td>{{ order.surface_type }}</td>
+                        <td class="submitted-date">{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
+                        <td class="payment-status {% if order.payment_status == 'paid' %}paid{% elif order.payment_status == 'rejected' %}rejected{% else %}unpaid{% endif %}">
+                          {{ order.payment_status }}
+                      </td>
+                        <td>
+                            {% if order.payment_status == 'paid' %}
+                            <span style="color: green;">Payment Accepted</span>
+                            {% elif order.payment_status == 'rejected' %}
+                            <span style="color: red;">Payment Rejected</span>
+                            {% else %}
+                            {% if order.payment_status != 'paid' %}
+                            <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
+                                <button type="submit" class="paid-button" name="action" value="accept">Accept</button>
+                                <button type="submit" class="paid-button" name="action" value="reject">Reject</button>
+                            </form>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+    
+            <div class="card category-table" id="rejected-orders" style="display: none;">
+                <h1>Rejected Orders</h1>
+                <table>
+                  <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Company Name</th>
+                        <th>Billboard Info</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Region</th>
+                        <th>Display Type</th>
+                        <th>Surface Type</th>
+                        <th>Submitted Date</th> 
+                        <th>Status</th>
+                        <th>Confirm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for date, orders_group in grouped_orders.items() %}
+                   
+                    {% for order in orders_group %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.company_name }}</td>
+                        <td>{{ order.billboard_info }}</td>
+                        <td>{{ order.start_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ order.end_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ order.region }}</td>
+                        <td>{{ order.display_type }}</td>
+                        <td>{{ order.surface_type }}</td>
+                        <td class="submitted-date">{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
+                        <td class="payment-status {% if order.payment_status == 'paid' %}paid{% elif order.payment_status == 'rejected' %}rejected{% else %}unpaid{% endif %}">
+                          {{ order.payment_status }}
+                      </td>
+                        <td>
+                            {% if order.payment_status == 'paid' %}
+                            <span style="color: green;">Payment Accepted</span>
+                            {% elif order.payment_status == 'rejected' %}
+                            <span style="color: red;">Payment Rejected</span>
+                            {% else %}
+                            {% if order.payment_status != 'paid' %}
+                            <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
+                                <button type="submit" class="paid-button" name="action" value="accept">Accept</button>
+                                <button type="submit" class="paid-button" name="action" value="reject">Reject</button>
+                            </form>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+    
+            <div class="card category-table" id="pending-orders" style="display: none;">
+                <h1>Pending Orders</h1>
+                <table>
+                  <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Company Name</th>
+                        <th>Billboard Info</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Region</th>
+                        <th>Display Type</th>
+                        <th>Surface Type</th>
+                        <th>Submitted Date</th> 
+                        <th>Status</th>
+                        <th>Confirm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for date, orders_group in grouped_orders.items() %}
+                      {% for order in orders_group %}
+                              <td>{{ order.id }}</td>
+                              <td>{{ order.company_name }}</td>
+                              <td>{{ order.billboard_info }}</td>
+                              <td>{{ order.start_date.strftime('%Y-%m-%d') }}</td>
+                              <td>{{ order.end_date.strftime('%Y-%m-%d') }}</td>
+                              <td>{{ order.region }}</td>
+                              <td>{{ order.display_type }}</td>
+                              <td>{{ order.surface_type }}</td>
+                              <td class="submitted-date">{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
+                              <td class="payment-status {% if order.payment_status == 'paid' %}paid{% elif order.payment_status == 'rejected' %}rejected{% else %}unpaid{% endif %}">
+                                  {{ order.payment_status }}
+                              </td>
+                              <td>
+                                  {% if order.payment_status == 'paid' %}
+                                      <span style="color: green;">Payment Accepted</span>
+                                  {% elif order.payment_status == 'rejected' %}
+                                      <span style="color: red;">Payment Rejected</span>
+                                  {% else %}
+                                      <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
+                                          <button type="submit" class="paid-button" name="action" value="accept">Accept</button>
+                                          <button type="submit" class="paid-button" name="action" value="reject">Reject</button>
+                                      </form>
+                                  {% endif %}
+                              </td>
+                          </tr>
+                      {% endfor %}
+                  {% endfor %}
+              </tbody>
+              
+                </table>
+            </div>
+            <div class="pagination" id="pagination-container"></div>
+        </div>      
+    <script>
+ $(document).ready(function() {
+    var rowsPerPage = 6; 
+    var tableRows = $('tbody tr:visible'); 
+    var totalPages = Math.ceil(tableRows.length / rowsPerPage);
+
+    $('#pagination-container').append($('<a href="#" class="page-link special"><</a>').data('page', 1));
+    
+    for (var i = 0; i < totalPages; i++) {
+        var pageNumber = i + 1;
+        var pageLink = $('<a href="#" class="page-link">' + pageNumber + '</a>');
+        pageLink.data('page', pageNumber);
+        $('#pagination-container').append(pageLink);
+    }
+    
+    $('#pagination-container').append($('<a href="#" class="page-link special">></a>').data('page', totalPages));
+
+    $('.page-link').click(function() {
+        var currentPage = $(this).data('page');
+        var startIndex = (currentPage - 1) * rowsPerPage;
+        var endIndex = startIndex + rowsPerPage;
+        $('tbody tr').hide();
+        $('tbody tr').slice(startIndex, endIndex).show();
+        $('.page-link').removeClass('active');
+        $(this).addClass('active');
+        
+        return false;
+    });
+    
+    $('.page-link:first').click();
+});
+
+    </script>
+</body>
+</html>
 
