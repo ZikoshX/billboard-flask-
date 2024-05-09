@@ -364,63 +364,29 @@ def loginmanager():
     # GET request or invalid login attempt, render login form
     return render_template('loginmanager.html', active_page=active_page)
 
-@app.route('/chat')
-def chat():
-    active_page = 'chat'
-    return render_template('chat.html', active_page=active_page)
-
-@app.route('/manager_settings', methods=['POST','GET'])
-def manager_settings():
-    active_page='manager_settings'
-    return render_template('manager_settings.html', active_page=active_page)
-
-@app.route('/chatmanager')
-def chatmanager():
-    active_page = 'chatmanager'
-    return render_template('chatmanager.html', active_page=active_page)
-
 @app.route('/calendar')
 def calendar():
     active_page='calendar'
     return render_template('calendar.html', active_page=active_page)
 
 
-@app.route('/help')
-def help():
-    return render_template('help.html')
-
-@app.route('/services')
-def services():
-    return render_template('services.html')
-
-@app.route('/settings', methods=['POST', 'GET'])
-def settings():
-    active_page='settings'
-    return render_template('settings.html', active_page=active_page)
-
-@app.route('/profile', methods=['POST','GET'])
-def profile():
+@app.route('/orderclient', methods=['POST','GET'])
+def orderclient():
     order_details = session.get('order_details')
     name = session.get('name')
     surname = session.get('lastname')
     active_page='profile'
     
-    return render_template('profile.html', name=name, surname=surname, active_page=active_page)
-   
+    return render_template('orderclient.html', name=name, surname=surname, active_page=active_page)
 
-@app.route('/next_order')
-def next_order():
-    return render_template('next_order.html')
 
 @app.route('/changed_order/<int:order_id>', methods=['POST', 'GET'])
 def changed_order(order_id):
-    # Fetch the order details from the database
     name = session.get('name')
     surname = session.get('lastname')
     order = Orders.query.get(order_id)
 
     if request.method == 'POST':
-        # Retrieve form data
         company_name = request.form['company-name']
         billboard_info = request.form['billboard-info']
         start_date = request.form['Start']
