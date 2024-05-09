@@ -1,1 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Happy Client Advertising Agency</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+</head>
+<body background="">
+    <header class="header" id="home">
+        <div class="overlay">
+            <nav class="navbar">
+                <a href="{{ url_for('home') }}" class="logo">Happy Client
+                </a>
+                
+                <div class="nav-links">
+                  <a href="#contain-h2" class="nav-item">About us</a>
+                    <a href="#service" class="nav-item">Services</a>
+                    <a href="#contacts" class="nav-item">Contacts</a>
+                </div>
+                <div class="profile-language-container">
+                <a href="{{ url_for('dashboard') }}" class="profile-icon">
+                    <i class="fas fa-user-circle"></i>
+                  </a>
+            
+                  
+                </div>
+            </nav>
+            <div class="banner-container">
+                <h1>ALL TYPES OF ADVERTISING IN ALMATY</h1>
+                <div class="divider"></div>
+                <p class="agency-name">Advertising Agency HAPPY CLIENT</p>
+            </div>
+
+            <div class="features-container">
+              <ul class="features-list">
+                <li>100% hit the target audience</li>
+                <li>More than 10 years of professional experience</li>
+                <li>Since 2016 on the market</li>
+                <li>More than 600 satisfied customers</li>
+              </ul>
+            </div>
+            <div class="btn-holder">
+                <a href="{{ url_for('profile') }}" class="btn btn-5 hover-border-11">
+                    <span>ORDER NOW</span>
+                </a>
+            </div>
+            
+            <a class="smoothscroll" href="#wrapper">
+              <div class="scroll-down"></div></a>
+          </header>
+         
+
+          
+          <h2 id="contain-h2"> About Us</h2>
+          <div class="block"></div>
+          <h3>Our Company</h3>
+          <p>We are a leading provider of outdoor advertising solutions, specializing in high-impact billboard campaigns that reach audiences far and wide. With decades of experience in the industry, we have established ourselves as a trusted partner for businesses looking to make a statement through strategic outdoor advertising.</p>
+          <h3>Our Mission & Values</h3>
+          <p>Our mission is to deliver exceptional results for our clients by leveraging the power of outdoor advertising to maximize brand exposure and drive business growth. We are committed to integrity, innovation, and excellence in everything we do.</p>
+          <h3>Our Team</h3>
+          <p>We are a dedicated team of professionals with expertise in marketing, design, and outdoor advertising. Our passion for what we do drives us to deliver outstanding results for our clients, exceeding expectations every step of the way.</p>
+
+          <h2 id="service">Our Services</h2>
+          <div class="block"></div>
+          <div id="wrapper">
+            <div class="cols">
+                <div class="col" ontouchstart="this.classList.toggle('hover');">
+                  <div class="container">
+                    <div class="front" style="background-image: url(https://www.measuringknowhow.com/wp-content/uploads/2022/03/Standard-billboard-sizes.jpg)">
+                      <div class="inner">
+                        <p>Standard Billboards</p>
+                      </div>
+                    </div>
+                    <div class="back">
+                      <div class="inner">
+                        <p>Allows for large, eye-catching graphics and bold text, making them ideal for delivering impactful messages.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" ontouchstart="this.classList.toggle('hover');">
+                  <div class="container">
+                    <div class="front" style="background-image: url(https://i.pinimg.com/originals/06/00/99/060099d05640a07e4a4249a25bcb0cf7.jpg)">
+                      <div class="inner">
+                        <p>Digital Billboards</p>
+                      </div>
+                    </div>
+                    <div class="back">
+                      <div class="inner">
+                        <p>Digital billboards use high-intensity, light-emitting diode (LED) technology to display images and video content.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" ontouchstart="this.classList.toggle('hover');">
+                  <div class="container">
+                    <div class="front" style="background-image: url(https://trafficdisplays.com/wp-content/uploads/2017/02/backlit_mobile_billboard.jpg)">
+                      <div class="inner">
+                        <p>Mobile Billboards</p>
+                
+                      </div>
+                    </div>
+                    <div class="back">
+                      <div class="inner">
+                        <p>These billboards are mounted on trucks or trailers and can be moved to various locations. </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" ontouchstart="this.classList.toggle('hover');">
+                  <div class="container">
+                    <div class="front" style="background-image: url(https://1.bp.blogspot.com/-ktYH_umYWXY/VwLdqoYnbcI/AAAAAAAAH3U/XLHreD0OEPIykKBHbTrw4EI22TlKZc1GA/s1600/outdoor%2Bbillboard%2Bmock%2Bup%2Bbot%2Blab.png)">
+                      <div class="inner">
+                        <p>Poster Billboards</p>
+                     
+                      </div>
+                    </div>
+                    <div class="back">
+                      <div class="inner">
+                        <p>Smaller than standard billboards, these are often found in urban areas and display static advertising posters.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" ontouchstart="this.classList.toggle('hover');">
+                  <div class="container">
+                    <div class="front" style="background-image: url(https://www.godrtv.com/wp-content/uploads/elementor/thumbs/Building2-ovy4cfnw64hzuyi23j9gp9gux7qywztj19xzg7cnw4.jpg)">
+                      <div class="inner">
+                        <p>Wallscapes</p>
+                
+                      </div>
+                    </div>
+                    <div class="back">
+                      <div class="inner">
+                        <p> Large advertisements painted or affixed directly onto the exteriors of buildings.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" ontouchstart="this.classList.toggle('hover');">
+                  <div class="container">
+                    <div class="front" style="background-image: url(https://novocherkassk.libertyltd.ru/upload/medialibrary/e53/e538122b0a06b3a3629638a95205cd1b.jpg)">
+                      <div class="inner">
+                        <p>Three-Dimensional (3D) Billboards</p>
+                    
+                      </div>
+                    </div>
+                    <div class="back">
+                      <div class="inner">
+                        <p> Billboards with physical elements or structures that extend outward from the display.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" ontouchstart="this.classList.toggle('hover');">
+                  <div class="container">
+                    <div class="front" style="background-image: url(https://cdn1.dizkon.ru/images/contests/2014/03/05/53175ef99d22f.700x534.80.jpg)">
+                      <div class="inner">
+                        <p>Eco-Billboards</p>
+  
+                      </div>
+                    </div>
+                    <div class="back">
+                      <div class="inner">
+                        <p> Environmentally friendly billboards that utilize sustainable materials or incorporate eco-friendly features.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" ontouchstart="this.classList.toggle('hover');">
+                  <div class="container">
+                    <div class="front" style="background-image: url(https://as1.ftcdn.net/v2/jpg/00/93/85/26/1000_F_93852628_ZfyKA1AfbFlPIlU9LxyMwSRLeQTQJKAi.jpg)">
+                      <div class="inner">
+                        <p>Interactive Billboards</p>
+          
+                      </div>
+                    </div>
+                    <div class="back">
+                      <div class="inner">
+                        <p>Incorporating technology such as touchscreens or motion sensors.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+           </div>
+
+
+              <h2 id="contacts">Contact Us</h2>
+              <div class="block"></div>
+              <div class="contain">
+                <div class="content">
+                  <div class="left-side">
+                    <div class="address details">
+                      <i class="fas fa-map-marker-alt" style="margin-left: -10%;"></i>
+                      <div class="topic">Address</div>
+                      <div class="text-one">Almaty Region, Kaskelen, Abylai Khan Avenue 1/1</div>
+                    </div>
+                    <div class="phone details">
+                      <i class="fas fa-phone-alt" style=" margin-left: -12%;"></i>
+                      <div class="topic">Phone</div>
+                      <div class="text-one">+7 777 530 47 53</div>
+                    </div>
+                    <div class="email details">
+                      <i class="fas fa-envelope" style="margin-left: -8%;"></i>
+                      <div class="topic">Email</div>
+                      <div class="text-one">210107133@stu.sdu.edu.kz</div>
+                    </div>
+                  </div>
+                  <div class="right-side">
+                    <div class="topic-text">Send us a message</div>
+                  <form action="#">
+                    <div class="input-box">
+                      <input type="text" placeholder="Enter your name">
+                    </div>
+                    <div class="input-box">
+                      <input type="text" placeholder="Enter your email">
+                    </div>
+                    <div class="input-box message-box">
+                        <textarea placeholder="Write your message here"></textarea>
+                    </div>
+                    <div class="button">
+                      <input type="button" value="Send Now" >
+                    </div>
+                  </form>
+                </div>
+                </div>
+              </div>
+
+
+              <footer class="footer">
+                <div class="waves">
+                  <div class="wave" id="wave1"></div>
+                  <div class="wave" id="wave2"></div>
+                  <div class="wave" id="wave3"></div>
+                  <div class="wave" id="wave4"></div>
+                </div>
+                <ul class="social-icon">
+                  <li class="social-icon__item"><a class="social-icon__link" href="#">
+                      <ion-icon name="logo-facebook"></ion-icon>
+                    </a></li>
+                  <li class="social-icon__item"><a class="social-icon__link" href="#">
+                      <ion-icon name="logo-twitter"></ion-icon>
+                    </a></li>
+                  <li class="social-icon__item"><a class="social-icon__link" href="#">
+                      <ion-icon name="logo-linkedin"></ion-icon>
+                    </a></li>
+                  <li class="social-icon__item"><a class="social-icon__link" href="#">
+                      <ion-icon name="logo-instagram"></ion-icon>
+                    </a></li>
+                </ul>
+                <ul class="menu">
+                  <li class="menu__item"><a class="menu__link" href="{{ url_for('home') }}">Home</a></li>
+                  <li class="menu__item"><a class="menu__link" href="#contain-h2">About</a></li>
+                  <li class="menu__item"><a class="menu__link" href="#service">Services</a></li>
+                  <li class="menu__item"><a class="menu__link" href="#contacts">Contact</a></li>
+            
+                </ul>
+                <p>&copy;2024 SDU | All Rights Reserved</p>
+              </footer>
+              <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+              <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+             
+</body>
+</html>
 
