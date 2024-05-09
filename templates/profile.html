@@ -1,75 +1,502 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Order</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/clientorder.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/clientorder1.css') }}">
+    <meta charset="UTF-8">
+    <title> Responsive Contact Us Form  | CodingLab </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet">
+
+    <script>
+    function validateFirstStep() {
+        var companyName = document.getElementById("company-name").value;
+        var billboardInfo = document.getElementById("billboard-info").value;
+        var pdfFormat = document.getElementById("pdf-format").value;
+        var startDate = document.getElementById("Start").value;
+        var endDate = document.getElementById("End").value;
+
+        var errorMessage = "";
+
+        if (companyName === "") {
+            errorMessage += "Company name is required.\n";
+        }
+        if (billboardInfo === "") {
+            errorMessage += "Billboard info is required.\n";
+        }
+        if (pdfFormat === "") {
+            errorMessage += "PDF format of billboard is required.\n";
+        }
+        if (startDate === "") {
+            errorMessage += "Start date is required.\n";
+        }
+        if (endDate === "") {
+            errorMessage += "End date is required.\n";
+        }
+        if (new Date(endDate) < new Date(startDate)) {
+            errorMessage += "End date cannot be earlier than start date.\n";
+        }
+        if (errorMessage !== "") {
+            alert(errorMessage); 
+            return false;
+        }
+        return true;
+    }
+
+function validateSecondStep() {
+    var selectedRegion = document.querySelectorAll('input[name="city"]:checked');
+    var displayType = document.getElementById("display").value;
+    var surfaceType = document.getElementById("surface").value;
+
+    var errorMessage = "";
+
+    if (selectedRegion.length === 0) {
+        errorMessage += "Please choose at least one region.\n";
+    }
+    if (displayType === "") {
+        errorMessage += "Please choose a display type.\n";
+    }
+    if (surfaceType === "") {
+        errorMessage += "Please choose a surface type.\n";
+    }
+
+    if (errorMessage !== "") {
+        alert(errorMessage);
+        return false;
+    }
+
+    return true;
+}
+function moveToNextStep(step) {
+    if (step === 1) {
+        if (validateFirstStep()) {
+            document.getElementById("step1").style.display = "none";
+            document.getElementById("step2").style.display = "block";
+        }
+    } else if (step === 2) {
+        if (validateSecondStep()) {
+            updateReviewSection(); 
+            document.getElementById("step2").style.display = "none";
+            document.getElementById("step3").style.display = "block";
+        }
+    }
+}
+
+function validateAndMoveToNextStep(step) {
+    if (step === 1) {
+        if (validateFirstStep()) {
+            moveToNextStep(1);
+        }
+    } else if (step === 2) {
+        if (validateSecondStep()) {
+            moveToNextStep(2);
+        } else {
+        }
+    }
+}
+
+function updateReviewSection() {
+    var companyName = document.getElementById("company-name").value;
+    var billboardInfo = document.getElementById("billboard-info").value;
+    var startDate = document.getElementById("Start").value;
+    var endDate = document.getElementById("End").value;
+    var selectedRegions = document.querySelectorAll('input[name="city"]:checked');
+    var regions = [];
+    selectedRegions.forEach(function(region) {
+        regions.push(region.value);
+    });
+    var displayType = document.getElementById("display").value;
+    var surfaceType = document.getElementById("surface").value;
+    var totalPrice = calculateTotalPrice();
+    document.getElementById("review-company-name").textContent = companyName;
+    document.getElementById("review-billboard-info").textContent = billboardInfo;
+    document.getElementById("review-start-date").textContent = startDate;
+    document.getElementById("review-end-date").textContent = endDate;
+    document.getElementById("review-region").textContent = regions.join(", ");
+    document.getElementById("review-display-type").textContent = displayType;
+    document.getElementById("review-surface-type").textContent = surfaceType;
+    document.getElementById("review-total-price").textContent = totalPrice + " tg";
+}
+
+
+
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      var selectElement = document.getElementById("region");
+      var placeholderOption = selectElement.options[0]; 
+      selectElement.addEventListener("change", function() {
+          var selectedOption = this.options[this.selectedIndex];
+
+          if (selectedOption === placeholderOption) {
+              placeholderOption.style.display = "none";
+          } else {
+              placeholderOption.style.display = "block";
+          }
+      });
+  });
+</script>
+<script>
+function updateColor(selectElement) {
+  if (selectElement.value) {
+    selectElement.classList.add('selected');
+  } else {
+    selectElement.classList.remove('selected');
+  }
+}
+document.querySelectorAll('select').forEach(selectElement => {
+  selectElement.addEventListener('change', () => updateColor(selectElement));
+});
+
+</script>
   </head>
   <body>
-    <nav class="sidebar">
-      <a href="#" class="logo">Happy Client</a>
+    <header class="header">
+      <div class="logo-container"> 
+        <a href="{{ url_for('home') }}" class="logo-text">Happy Client</a>
+    </div>    
+        <nav class="navbar">
+          <ul class="nav-links">
+            <li {% if active_page == 'loginclient' %}class="active"{% endif %}><a href="{{ url_for('loginclient') }}">Dashboard</a></li>
+            <li {% if active_page == 'profile' %}class="active"{% endif %}><a href="{{ url_for('profile') }}">Order to Billboard</a></li>
+            <li {% if active_page == 'orderhistory' %}class="active"{% endif %}><a href="{{ url_for('orderhistory') }}">Order History</a></li>
+            <li {% if active_page == 'penalty' %}class="active"{% endif %}><a href="{{ url_for('penalty') }}">Penalty</a></li>
+            <li {% if active_page == 'dashboard' %}class="active"{% endif %}><a href="{{ url_for('dashboard') }}">Profile</a></li>
+          </ul>
+        </nav>
+        <div class="language-select">
+          <select>
+              <option value="en" class="select option">English</option>
+              <option value="ru">Русский</option>
+              <option value="kz">Қазақша</option>
+          </select>
+        </div>
+    </header>
+<form  id="payment-form" class="order-form" action="{{ url_for('submit_order') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()" >
+    <h2 class="fs-title">Order to billboard, {{ name }} {{ surname }}</h2>
+    <ul id="progressbar">
+      <li class="active">Main info</li>
+      <li>Options</li>
+      <li>Review</li>
+    </ul>
+    <fieldset>
+      <label for="company-name" style="font-size: 19px; font-weight: bolder;">Company name</label>
+      <input type="text" name="company-name" id="company-name" required  onchange="updateReviewSection()">
+      <label for="billboard-info" style="font-size: 19px; font-weight: bolder;">What about the billboard</label>
+      <input type="text" id="billboard-info" name="billboard-info" onchange="updateReviewSection()"/>
+      <div id="error-message" style="color: red; margin-bottom: 10px;"></div>
+      <label for="Start" style="font-size: 19px; font-weight: bolder;">Start date:</label>
+      <input type="date" id="Start" name="Start"  onchange="updateReviewSection()">
+      <label for="End" style="font-size: 19px; font-weight: bolder;">End date:</label>
+          <input type="date" id="End" name="End"  onchange="updateReviewSection()">
 
-      <div class="menu-content">
-        <ul class="menu-items">
-
-            <li class="item">
-                <a href="#">Dashboard</a>
-              </li>
-    
-          <li class="item">
-            <a href="#">Order to billboard</a>
-          </li>
-
-           <li class="item">
-            <a href="#">Oder history</a>
-          </li>
-
-          <li class="item">
-            <a href="#">Chat with manager</a>
-          </li>
-
-          <li class="item">
-            <a href="#">Penalty</a>
-          </li>
-
-          <li class="item">
-            <a href="#">Settings</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <nav class="navbar">
-      <i class="fa-solid fa-bars" id="sidebar-close"></i>
-    </nav>
-
-    <div class="container">
-        <h1>Order to Billboard, {{ session.manager_name }}</h1>
-        <form action="/submit_order" method="POST">
-          <div class="input-group">
-            <label for="company-name">Company name</label>
-            <input type="text" id="company-name" name="company-name">
-          </div>
-          <div class="input-group">
-            <label for="billboard-info">What about the billboard</label>
-            <input type="text" id="billboard-info" name="billboard-info">
-          </div>
-          <div class="input-group">
+          <div>
             <label for="pdf-format">PDF format of billboard</label>
-            <input type="text" id="pdf-format" name="pdf-format">
-          </div>
-          <label for="Start">Start date</label>
-          <input type="date" id="Start" name="Start">
-          <label for="End">End date</label>
-          <input type="date" id="End" name="End">
-          <input type="submit" value="Next">
-
-        </form>
+            <br>
+            <input type="file" id="pdf-format" name="pdf-format" accept=".pdf">
+            <button type="button" id="remove-btn" onclick="removePDF()">Remove</button>
+        </div>
         
-      </div>
+        <input type="button" name="next" id="next-button" class="next action-button" value="Next" onclick="validateAndMoveToNextStep(1)">
 
+
+    </fieldset>
+    <fieldset id="region-list">
+
+      <section>
+        <legend for="region" style="margin-left: 50px; font-size: 19px; margin-bottom: 25px; font-weight: bolder;">Choose the region:</legend>
+        <div class="checkbox-group color1">
+            <div class="checkbox-item">
+      <input type="checkbox" name="city" value="здания Дворца Спорта им. Б.Шолака" id="checkbox1.1"  onchange="updateReviewSection(); updateImageDisplay(this, '1657955079google-icon-png.png')">
+      <label for="checkbox1.1">Здания Дворца Спорта им. Б.Шолака (3.1 x 2.1 m) </label><br>
+</div>
+<div class="checkbox-item">
+       <input type="checkbox" name="city" value="Толе би - Ауэзова" id="checkbox1.2" onchange="updateReviewSection(); updateImageDisplay(this,'billboard2Image')">
+         <label for="checkbox1.2">Толе би - Ауэзова (3.1 x 2.1 m)</label>
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Абая - Розыбакиева" id="checkbox1.3" onchange="updateReviewSection(); updateColor(this)">
+           <label for="checkbox1.3">Абая - Розыбакиева (3.1 x 2.1 m)</label>
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Медео и ГЛК Шымбулак" id="checkbox1.4" onchange="updateReviewSection(); updateColor(this)">
+           <label for="checkbox1.4">Медео и ГЛК Шымбулак (5.1 x 6.1 m)</label>
+  </div>
+  <div class="checkbox-item">
+           <input type="checkbox" name="city" value="ТЦ ESENTAI" id="checkbox1.5" onchange="updateReviewSection(); updateColor(this)">
+         <label for="checkbox1.5">ТЦ ESENTAI (5.1 x 6.1 m)</label>
+     </div>  
+     <div class="checkbox-item">
+           <input type="checkbox" name="city" value="MEGA(Розыбакиева)" id="checkbox1.6" onchange="updateReviewSection(); updateColor(this)">
+        <label for="checkbox1.6">MEGA(Розыбакиева) (5.1 x 6.1 m)</label>
+         </div>  
+         <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Арбат (ЦУМ)" id="checkbox1.7" onchange="updateReviewSection(); updateColor(this)">
+    <label for="checkbox1.7">Арбат (ЦУМ) (3.1 x 2.1 m)</label>
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Фитнес-клуб World class" id="checkbox1.8" onchange="updateReviewSection(); updateColor(this)">
+                  <label for="checkbox1.8">Фитнес-клуб World class (3.1 x 2.1 m)</label>
+      </div>
+      <div class="checkbox-item">
+           <input type="checkbox" name="city" value="АЗС (Royal Petrol, Helios)" id="checkbox1.9" onchange="updateReviewSection(); updateColor(this)">
+           <label for="checkbox1.9">АЗС (Royal Petrol, Helios) (5.1 x 6.1 m)</label>
+    </div>
+    <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Метрополитен Алматы" id="checkbox1.10" onchange="updateReviewSection(); updateColor(this)">
+     <label for="checkbox1.10">Метрополитен Алматы (3.1 x 2.1 m)</label>
+       </div>
+       <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Абай-Алтынсарин" id="checkbox1.11" onchange="updateReviewSection(); updateColor(this)">
+        <label for="checkbox1.11">Абай-Алтынсарин (3.1 x 2.1 m)</label>
+         </div>
+         <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Коктем-1" id="checkbox1.12" onchange="updateReviewSection(); updateColor(this)">
+    <label for="checkbox1.12">Коктем-1 (4.2 x 3.1 м)</label>
+         </div>
+         <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Байзакова - Тимирязева" id="checkbox1.13" onchange="updateReviewSection(); updateColor(this)">
+        <label for="checkbox1.13">Байзакова - Тимирязева (3.5 x 2.5 м)</label>
+        </div>
+        <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Жандосова - Сатпаева" id="checkbox1.14" onchange="updateReviewSection(); updateColor(this)">
+     <label for="checkbox1.14">Жандосова - Сатпаева (5.0 x 3.0 м)</label>
+         </div>
+         <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Райымбека - Фурманова" id="checkbox1.15" onchange="updateReviewSection(); updateColor(this)">
+        <label for="checkbox1.15">Райымбека - Фурманова (4.0 x 2.5 м)</label>
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Московская" id="checkbox1.16"  onchange="updateReviewSection(); updateImageDisplay(this, 'billboard14Image')">
+             <label for="checkbox1.16">Московская (3.7 x 2.2 м)</label>  
+  </div>
+  <div class="checkbox-item">
+           <input type="checkbox" name="city" value="Жибек Жолы - Толе би" id="checkbox1.17" onchange="updateReviewSection(); updateImageDisplay(this, 'billboard15Image')">
+              <label for="checkbox1.17">Жибек Жолы - Толе би (4.5 x 3.0 м)</label> 
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Наурызбай батыра" id="checkbox1.18"  onchange="updateReviewSection(); updateImageDisplay(this, 'billboard16Image')">
+                 <label for="checkbox1.18">Наурызбай батыра (3.8 x 2.5 м)</label> 
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Манаса - Достык" id="checkbox1.19"  onchange="updateReviewSection(); updateImageDisplay(this, 'billboard17Image')">
+                <label for="checkbox1.19">Манаса - Достык (4.2 x 3.0 м)</label>  
+</div>
+<div class="checkbox-item">
+           <input type="checkbox" name="city" value="Кабанбай батыра - Масанчи" id="checkbox1.20" onchange="updateReviewSection(); updateImageDisplay(this, 'billboard18Image')">
+               <label for="checkbox1.20">Кабанбай батыра - Масанчи (3.3 x 2.0 м)</label> 
+          </div> 
+         </div>
+        </section>
+
+
+        <sectioni>
+          <label for="display" style="margin-left: 50px; font-size: 19px; font-weight: bolder;">Choose the type of display</label>
+          <select id="display" name="display" onchange="updateTotalPrice(); updateReviewSection(); updateColor(this);" class="custom-select sources" placeholder="Display">
+              <option disabled selected value=""></option>
+              <option value="single face">Single face</option>
+              <option value="double face">Double face</option>
+              <option value="lamp posts">Lamp posts</option>
+              <option value="interactive">Interactive</option>
+          </select>
+      </sectioni>
+      
+      <sectioni>
+          <label for="surface" style="margin-left: 50px; font-size: 19px; font-weight: bolder;">Choose the type of surface</label>
+          <select id="surface" name="surface" onchange="updateTotalPrice(); updateReviewSection(); updateColor(this);" class="custom-select sources" placeholder="Surface">
+              <option disabled selected value=""></option>
+              <option value="vinyl">Vinyl</option>
+              <option value="digital">Digital</option>
+              <option value="static">Static</option>
+          </select>
+      </sectioni>
+      
+          <div id="total-price" name="total-price" style="margin-left: 25px;">
+        </div>
+          
+     <input type="button" name="previous" class="previous action-button" value="Previous" />
+      <input type="button" name="next" class="next action-button" value="Next" onchange="updateReviewSection()" onclick="validateAndMoveToNextStep(2)"/>
+    </fieldset>
+
+<fieldset id="review-section">
+    <label>Company Name: <span id="review-company-name"></span></label>
+    <label>Billboard Info: <span id="review-billboard-info"></span></label>
+    <label>Start Date: <span id="review-start-date"></span></label>
+    <label>End Date: <span id="review-end-date"></span></label>
+    <label>Region: <span id="review-region"></span></label>
+    <label>Display Type: <span id="review-display-type"></span></label>
+    <label>Surface Type: <span id="review-surface-type"></span></label>
+    <label>Total Price: <span id="review-total-price"></span></label>
+    <input type="button" name="previous" class="previous action-button" value="Previous" />
+    <button type="submit" name="submit" class="submit action-button" id="goButton"onclick="submitForm()" >Complete order</button>
+</fieldset>
+</form>
+<footer>
+    <div class="footer">
+    <div class="row">
+    <a href="#"><i class="fa fa-facebook"></i></a>
+    <a href="#"><i class="fa fa-instagram"></i></a>
+    <a href="#"><i class="fa fa-youtube"></i></a>
+    <a href="#"><i class="fa fa-twitter"></i></a>
+    </div>
+    
+    <div class="row">
+    <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#service">Our Services</a></li>
+    <li><a href="#contain-h2">About us</a></li>
+    <li><a href="#contacts">Contact us</a></li>
+    </ul>
+    </div>
+    
+    <div class="row">
+   © 2024 | SDU | All rights reserved
+    </div>
+    </div>
+    </footer>
+
+    <script  src="{{ url_for('static', filename='js/example.js') }}"></script>
+    <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-pdf-preview/dist/filepond-plugin-pdf-preview.min.js"></script>
+   <script>
+    const prices = {
+      "здания Дворца Спорта им. Б.Шолака": 200000, 
+      "Толе би - Ауэзова": 180000,
+      "Абая - Розыбакиева": 180000,
+      "Медео и ГЛК Шымбулак": 250000, 
+      "ТЦ ESENTAI": 350000,
+      "MEGA(Розыбакиева)": 220000,
+      "Арбат (ЦУМ)": 210000,
+      "Фитнес-клуб World class": 300000,
+      "АЗС (Royal Petrol, Helios)": 180000,
+      "Метрополитен Алматы": 240000,
+      "Абай-Алтынсарин": 190000,
+      "Коктем-1": 210000,
+      "Байзакова - Тимирязева": 200000,
+      "Жандосова - Сатпаева": 180000,
+      "Райымбека - Фурманова": 240000,
+      "Московская": 220000,
+      "Жибек Жолы - Толе би": 230000,
+      "Наурызбай батыра": 190000,
+      "Манаса - Достык": 200000,
+      "Кабанбай батыра - Масанчи": 220000,
+    };
+    function updateTotalPrice() {
+  var totalPrice = calculateTotalPrice();
+  document.getElementById('total-price').textContent = "Total Price: " + totalPrice + " tg";
+}
+
+function calculateTotalPrice() {
+  var checkboxes = document.querySelectorAll('input[name="city"]:checked');
+  var totalPrice = 0;
+  checkboxes.forEach(function(checkbox) {
+    var billboardPrice = prices[checkbox.value];
+    totalPrice += billboardPrice;
+  });
+  var display = document.getElementById('display').value;
+  var surface = document.getElementById('surface').value;
+
+  checkboxes.forEach(function(checkbox) {
+    var billboardPrice = prices[checkbox.value];
+    if ((display === "single face" || display === "lamp posts") && surface === "vinyl") {
+     totalPrice += 50000;
+    } else if ((display === "double face" || display === "interactive") && surface === "digital") {
+      totalPrice *= 2;
+    } 
+    else if ((display === "double face" || display === "interactive") && surface === "vinyl") {
+      totalPrice *= 2; 
+    } 
+    else if ((display === "double face" || display === "interactive") && surface === "static") {
+      totalPrice *= 2; 
+    } else if ((display === "single face" || display === "lamp posts") && surface === "static") {
+      totalPrice += 60000;
+    } 
+  });
+
+  return totalPrice;
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('display').addEventListener('change', updateTotalPrice);
+  document.getElementById('surface').addEventListener('change', updateTotalPrice);
+  document.querySelectorAll('input[name="city"]').forEach(input => {
+    input.addEventListener('change', updateTotalPrice);
+  });
+});
+console.log("Display Type: ", displayType);
+console.log("Surface Type: ", surfaceType);
+console.log("Total Price: ", totalPrice);
+
+        </script>
+       <script>
+     function submitForm() {
+    var totalPrice = calculateTotalPrice();
+    var form = document.getElementById('payment-form');
+    var totalPriceInput = document.createElement('input');
+    totalPriceInput.type = 'hidden';
+    totalPriceInput.name = 'total-price';
+    totalPriceInput.value = totalPrice;
+    form.appendChild(totalPriceInput);
+    form.submit();
+}
+
+
+    </script>
+    <script>
+      function updateReviewSection() {
+    var companyName = document.getElementById("company-name").value;
+    var billboardInfo = document.getElementById("billboard-info").value;
+    var startDate = document.getElementById("Start").value;
+    var endDate = document.getElementById("End").value;
+    var region = document.querySelector('input[name="city"]:checked').value;
+    var displayType = document.getElementById("display").value;
+    var surfaceType = document.getElementById("surface").value;
+    var totalPrice = calculateTotalPrice();
+    document.getElementById("review-company-name").textContent = companyName;
+    document.getElementById("review-billboard-info").textContent = billboardInfo;
+    document.getElementById("review-start-date").textContent = startDate;
+    document.getElementById("review-end-date").textContent = endDate;
+    document.getElementById("review-region").textContent = region;
+    document.getElementById("review-display-type").textContent = displayType;
+    document.getElementById("review-surface-type").textContent = surfaceType;
+    document.getElementById("review-total-price").textContent = totalPrice + " tg";
+}
+
+      </script>
+        
+              <link rel="stylesheet" href="{{ url_for('static', filename='js/orderr.js') }}">   
+              <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+              <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+              <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script> 
+              <script>
+                function removePDF() {
+                  var fileInput = document.getElementById("pdf-format");
+                  fileInput.value = ""; 
+                  toggleRemoveButton();
+                }
+        
+                function toggleRemoveButton() {
+                  var fileInput = document.getElementById("pdf-format");
+                  var removeBtn = document.getElementById("remove-btn");
+                  removeBtn.style.display = fileInput.value ? "inline-block" : "none";
+                }
+      
+                document.addEventListener("DOMContentLoaded", function() {
+                  var fileInput = document.getElementById("pdf-format");
+                  fileInput.addEventListener("change", toggleRemoveButton);
+                });
+              </script>
+          
   </body>
 </html>
