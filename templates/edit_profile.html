@@ -56,7 +56,7 @@ input[type="submit"]:hover {
           <nav class="navbar">
             <ul class="nav-links">
               <li {% if active_page == 'loginclient' %}class="active"{% endif %}><a href="{{ url_for('loginclient') }}">Dashboard</a></li>
-              <li {% if active_page == 'profile' %}class="active"{% endif %}><a href="{{ url_for('profile') }}">Order to Billboard</a></li>
+              <li {% if active_page == 'orderclient' %}class="active"{% endif %}><a href="{{ url_for('orderclient') }}">Order to Billboard</a></li>
               <li {% if active_page == 'orderhistory' %}class="active"{% endif %}><a href="{{ url_for('orderhistory') }}">Order History</a></li>
               <li {% if active_page == 'chat' %}class="active"{% endif %}><a href="{{ url_for('chat') }}">Chat with Manager</a></li>
               <li><a href="#">Penalty</a></li>
