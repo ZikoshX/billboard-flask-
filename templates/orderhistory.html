@@ -42,7 +42,7 @@
     <nav class="navbar">
         <ul class="nav-links">
             <li {% if active_page == 'loginclient' %}class="active"{% endif %}><a href="{{ url_for('loginclient') }}">Dashboard</a></li>
-            <li {% if active_page == 'profile' %}class="active"{% endif %}><a href="{{ url_for('profile') }}">Order to billboard</a></li>
+            <li {% if active_page == 'orderclient' %}class="active"{% endif %}><a href="{{ url_for('orderclient') }}">Order to billboard</a></li>
             <li {% if active_page == 'orderhistory' %}class="active"{% endif %}><a href="{{ url_for('orderhistory') }}">Order history</a></li>
             <li {% if active_page == 'penalty' %}class="active"{% endif %}><a href="{{ url_for('penalty') }}">Penalty</a></li>
             <li {% if active_page == 'dashboard' %}class="active"{% endif %}><a href="{{ url_for('dashboard') }}">Profile</a></li>
