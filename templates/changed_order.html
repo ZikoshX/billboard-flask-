@@ -140,7 +140,7 @@ document.querySelectorAll('select').forEach(selectElement => {
         <nav class="navbar">
           <ul class="nav-links">
             <li {% if active_page == 'loginclient' %}class="active"{% endif %}><a href="{{ url_for('loginclient') }}">Dashboard</a></li>
-            <li {% if active_page == 'profile' %}class="active"{% endif %}><a href="{{ url_for('profile') }}">Order to Billboard</a></li>
+            <li {% if active_page == 'orderclient' %}class="active"{% endif %}><a href="{{ url_for('orderclient') }}">Order to Billboard</a></li>
             <li {% if active_page == 'change' %}class="active"{% endif %}><a href="{{ url_for('changed_order', order_id=order_id) }}">Change order</a></li>
             <li {% if active_page == 'penalty' %}class="active"{% endif %}><a href="{{ url_for('penalty') }}">Penalty</a></li>
             <li {% if active_page == 'dashboard' %}class="active"{% endif %}><a href="{{ url_for('dashboard') }}">Profile</a></li>
