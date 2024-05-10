@@ -417,14 +417,14 @@ def settings():
     active_page='settings'
     return render_template('settings.html', active_page=active_page)
 
-@app.route('/profile', methods=['POST','GET'])
+@app.route('/orderclient', methods=['POST','GET'])
 def profile():
     order_details = session.get('order_details')
     name = session.get('name')
     surname = session.get('lastname')
-    active_page='profile'
+    active_page='orderclient'
     
-    return render_template('profile.html', name=name, surname=surname, active_page=active_page)
+    return render_template('orderclient.html', name=name, surname=surname, active_page=active_page)
    
 
 @app.route('/next_order')
