@@ -111,7 +111,7 @@
     </div>
   </form>
   <div id="qrCodeContainer" class="qr-code-container">
-    <img src="{{ url_for('static', filename='images/qr.jpg') }}" alt="QR Code" style="max-width: 45%; height: auto; margin-top: 140px;">
+    <img src="{{ url_for('static', filename='images/kaspi_qr.jpg') }}" alt="QR Code" style="max-width: 45%; height: auto; margin-top: 140px;">
 </div>
 <form method="post" action="{{ url_for('payment', order_id=order.id) }}">
   <button class="paid-button" onclick="redirectToConfirmation('{{ order.id }}')">Paid</button>
