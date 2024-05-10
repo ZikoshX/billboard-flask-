@@ -418,7 +418,7 @@ def settings():
     return render_template('settings.html', active_page=active_page)
 
 @app.route('/orderclient', methods=['POST','GET'])
-def profile():
+def orderclient():
     order_details = session.get('order_details')
     name = session.get('name')
     surname = session.get('lastname')
