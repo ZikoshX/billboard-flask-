@@ -686,6 +686,19 @@ def edit_profile():
 
     # Pass the session variables to the template rendering function
     return render_template('edit_profile.html', name=name, username=username, surname=surname, phone_number=phone_number, email=email)
+    
+@app.route('/editprofile', methods=['POST','GET'])
+def edit_profile():
+    # Retrieve session variables
+    name = session.get('name')
+    username = session.get('username')
+    surname = session.get('lastname')
+    phone_number = session.get('phone_number')
+    email = session.get('email')
+      # Assuming 'username' is stored in session
+
+    # Pass the session variables to the template rendering function
+    return render_template('editprofile.html', name=name, username=username, surname=surname, phone_number=phone_number, email=email)
 
 
 @app.route('/update_profile', methods=['POST'])
@@ -697,29 +710,49 @@ def update_profile():
             surname = request.form.get('surname')
             phone_number = request.form.get('phone_number')
             email = request.form.get('email')
-            
+            # For manager's table
+            manager_info = {
+                'manager_field1': request.form.get('manager_field1'),
+                'manager_field2': request.form.get('manager_field2'),
+                # Add more fields as needed
+            }
+
             # Update user information in the database
             with conn.cursor() as cursor:
                 cursor.execute("""
                     UPDATE users
-                    SET name = %s, lastname = %s, phone_number = %s, email=%s
+                    SET name = %s, lastname = %s, phone_number = %s, email = %s
                     WHERE username = %s;
-                """, (name, surname, phone_number,email, session['username']))  # Use username as the condition
+                """, (name, surname, phone_number, email, session['username']))  # Use username as the condition
                 conn.commit()
+
+                # Check if manager_info is not empty (manager's profile updated)
+                if manager_info:
+                    cursor.execute("""
+                        UPDATE managers
+                        SET name = %s, lastname = %s, phone_number = %s, email = %s
+                        WHERE manager_id = %s;
+                    """, (name, surname, phone_number, email, session['manager_id']))  # Use manager_id as the condition
+                    conn.commit()
 
             # Update session variables with form data
             session['name'] = name
-            #session['username'] = username
             session['lastname'] = surname
             session['phone_number'] = phone_number
             session['email'] = email
 
-            return redirect(url_for('dashboard'))
+            # Check if manager_info is not empty (manager's profile updated)
+            if manager_info:
+                flash('Manager profile updated successfully.', 'success')
+                return redirect(url_for('edit_profile_manager'))
+            else:
+                flash('Profile updated successfully.', 'success')
+                return redirect(url_for('edit_profile_user'))
         except Exception as e:
             # Print or log the exception to debug
             print(e)
-            flash("An error occurred while updating the profile.", 'error')
-            return redirect(url_for('edit_profile'))
+            flash('An error occurred while updating the profile.', 'error')
+            return redirect(url_for('edit_profile_user'))
 
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
