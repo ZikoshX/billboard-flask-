@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+<style>
+h1 {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    margin-top: 20px;
+}
+form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+</style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container"> 
+          <a href="{{ url_for('home') }}" class="logo-text">Happy Client</a>
+      </div>    
+          <nav class="navbar">
+            <ul class="nav-links">
+              <li {% if active_page == 'loginmanager' %}class="active"{% endif %}><a href="{{ url_for('loginmanager') }}">Dashboard</a></li>
+              <li {% if active_page == 'orders' %}class="active"{% endif %}><a href="{{ url_for('orders') }}">Orders</a></li>
+              <li {% if active_page == 'calendar' %}class="active"{% endif %}><a href="{{ url_for('calendar') }}">Schedule</a></li>
+              <li {% if active_page == 'penaltymanager' %}class="active"{% endif %}><a href="{{ url_for('penaltymanager') }}">Penalty</a></li>
+            </ul>
+          </nav>
+          <a href="{{ url_for('editprofile') }}" class="profile-icon">
+              <i class="fas fa-user-circle"></i>
+            </a>
+          <div class="language-select">
+            <select>
+                <option value="en" class="select option">English</option>
+                <option value="ru">Русский</option>
+                <option value="kz">Қазақша</option>
+            </select>
+          </div>
+      </header>
+
+    <h1>Edit Profile</h1>
+    <form action="/update_profile" method="post">
+        <label for="name">Username:</label><br>
+        <input type="text" id="name" name="name" value="{{ username }}"><br>
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" value="{{ name }}"><br>
+        <label for="surname">Surname:</label><br>
+        <input type="text" id="surname" name="surname" value="{{ surname }}"><br>
+        <label for="phone_number">Phone Number:</label><br>
+        <input type="text" id="phone_number" name="phone_number" value="{{ phone_number }}"><br>
+        <label for="email">Email:</label><br>
+        <input type="text" id="email" name="email" value="{{ email }}"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
 
