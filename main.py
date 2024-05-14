@@ -688,7 +688,7 @@ def edit_profile():
     return render_template('edit_profile.html', name=name, username=username, surname=surname, phone_number=phone_number, email=email)
     
 @app.route('/editprofile', methods=['POST','GET'])
-def edit_profile():
+def editprofile():
     # Retrieve session variables
     name = session.get('name')
     username = session.get('username')
