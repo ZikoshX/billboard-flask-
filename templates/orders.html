@@ -145,6 +145,7 @@
                               <td>{{ order.display_type }}</td>
                               <td>{{ order.surface_type }}</td>
                               <td class="submitted-date">{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
+                              <td>{{order.payment_status}}</td>
                               <td>
                                 {% if order.payment_status == 'paid' %}
                                 <span style="color: green;">Payment Accepted</span>
