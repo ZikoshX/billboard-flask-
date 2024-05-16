@@ -149,10 +149,12 @@
                                     <span style="color: red;">Payment Rejected</span>
                                 {% else %}
                                 {% if order.payment_status != 'paid' %}
-                                    <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
+                                    <form action="{{ url_for('orders') }}" method="post" class="action-form">
+                                        <input type="hidden" name="order_id" value="{{ order.id }}">
                                         <button type="submit" class="paid-button" name="action" value="accept">Accept</button>
                                         <button type="submit" class="paid-button" name="action" value="reject">Reject</button>
-                                    </form>
+                                      </form>
+
                                 {% endif %}
                             {% endif %}
                             </td>
