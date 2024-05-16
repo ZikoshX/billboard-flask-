@@ -6,17 +6,9 @@
     <title>Client Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
     <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
     <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet">
@@ -24,14 +16,12 @@
       .card {
           background-color:white;
           margin-top: 20px;
+          margin-left: 80px; 
       }
       table {
           width: 95%;
           border-collapse: collapse;
           margin-top: 20px;
-      }
-      .card {
-          margin-left: 80px; 
       }
       thead {
           padding: 12px 2%;
@@ -148,18 +138,21 @@
                               <td>{{order.payment_status}}</td>
                               <td>
                                 {% if order.payment_status == 'paid' %}
-                                <span style="color: green;">Payment Accepted</span>
+                                    <span style="color: green;">Payment Accepted</span>
                                 {% elif order.payment_status == 'rejected' %}
-                                <span style="color: red;">Payment Rejected</span>
+                                    <span style="color: red;">Payment Rejected</span>
                                 {% else %}
-                                {% if order.payment_status != 'paid' %}
+                                {% if order.penalty_status != 'accepted' %}
                                     <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
                                         <button type="submit" class="penalty-button" name="action" value="accept">Accept</button>
                                         <button type="submit" class="penalty-button" name="action" value="reject">Reject</button>
                                     </form>
                                 {% endif %}
-                            {% endif %}  
-                              </td>
+                            {% endif %}
+                            </td>
+                         
+                            
+                            
                           </tr>
                           {% endfor %}
                           {% endfor %}
@@ -167,171 +160,8 @@
                   </table>
               </div>
 
+              <!-- Other card elements and table structures -->
 
-              <div class="card category-table" id="accepted-orders" style="display: none;">
-                <h1>Accepted Orders</h1>
-                <table>
-                  <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Company Name</th>
-                        <th>Billboard Info</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Region</th>
-                        <th>Display Type</th>
-                        <th>Surface Type</th>
-                        <th>Submitted Date</th> 
-                        <th>Status</th>
-                        <th>Confirm</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for date, orders_group in grouped_orders.items() %}
-                   
-                    {% for order in orders_group %}
-                    <tr>
-                        <td>{{ order.id }}</td>
-                        <td>{{ order.company_name }}</td>
-                        <td>{{ order.billboard_info }}</td>
-                        <td>{{ order.start_date.strftime('%Y-%m-%d') }}</td>
-                        <td>{{ order.end_date.strftime('%Y-%m-%d') }}</td>
-                        <td>{{ order.region }}</td>
-                        <td>{{ order.display_type }}</td>
-                        <td>{{ order.surface_type }}</td>
-                        <td class="submitted-date">{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
-                        <td class="payment-status {% if order.payment_status == 'paid' %}paid{% elif order.payment_status == 'rejected' %}rejected{% else %}unpaid{% endif %}">
-                          {{ order.payment_status }}
-                      </td>
-                        <td>
-                            {% if order.payment_status == 'paid' %}
-                            <span style="color: green;">Payment Accepted</span>
-                            {% elif order.payment_status == 'rejected' %}
-                            <span style="color: red;">Payment Rejected</span>
-                            {% else %}
-                            {% if order.payment_status != 'paid' %}
-                            <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
-                                <button type="submit" class="paid-button" name="action" value="accept">Accept</button>
-                                <button type="submit" class="paid-button" name="action" value="reject">Reject</button>
-                            </form>
-                            {% endif %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% endfor %}
-                </tbody>
-                </table>
-            </div>
-    
-            <div class="card category-table" id="rejected-orders" style="display: none;">
-                <h1>Rejected Orders</h1>
-                <table>
-                  <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Company Name</th>
-                        <th>Billboard Info</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Region</th>
-                        <th>Display Type</th>
-                        <th>Surface Type</th>
-                        <th>Submitted Date</th> 
-                        <th>Status</th>
-                        <th>Confirm</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for date, orders_group in grouped_orders.items() %}
-                   
-                    {% for order in orders_group %}
-                    <tr>
-                        <td>{{ order.id }}</td>
-                        <td>{{ order.company_name }}</td>
-                        <td>{{ order.billboard_info }}</td>
-                        <td>{{ order.start_date.strftime('%Y-%m-%d') }}</td>
-                        <td>{{ order.end_date.strftime('%Y-%m-%d') }}</td>
-                        <td>{{ order.region }}</td>
-                        <td>{{ order.display_type }}</td>
-                        <td>{{ order.surface_type }}</td>
-                        <td class="submitted-date">{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
-                        <td class="payment-status {% if order.payment_status == 'paid' %}paid{% elif order.payment_status == 'rejected' %}rejected{% else %}unpaid{% endif %}">
-                          {{ order.payment_status }}
-                      </td>
-                        <td>
-                            {% if order.payment_status == 'paid' %}
-                            <span style="color: green;">Payment Accepted</span>
-                            {% elif order.payment_status == 'rejected' %}
-                            <span style="color: red;">Payment Rejected</span>
-                            {% else %}
-                            {% if order.payment_status != 'paid' %}
-                            <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
-                                <button type="submit" class="paid-button" name="action" value="accept">Accept</button>
-                                <button type="submit" class="paid-button" name="action" value="reject">Reject</button>
-                            </form>
-                            {% endif %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% endfor %}
-                </tbody>
-                </table>
-            </div>
-    
-            <div class="card category-table" id="pending-orders" style="display: none;">
-                <h1>Pending Orders</h1>
-                <table>
-                  <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Company Name</th>
-                        <th>Billboard Info</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Region</th>
-                        <th>Display Type</th>
-                        <th>Surface Type</th>
-                        <th>Submitted Date</th> 
-                        <th>Status</th>
-                        <th>Confirm</th>
-                    </tr>
-                </thead>
-                <tbody>
-                  {% for date, orders_group in grouped_orders.items() %}
-                      {% for order in orders_group %}
-                              <td>{{ order.id }}</td>
-                              <td>{{ order.company_name }}</td>
-                              <td>{{ order.billboard_info }}</td>
-                              <td>{{ order.start_date.strftime('%Y-%m-%d') }}</td>
-                              <td>{{ order.end_date.strftime('%Y-%m-%d') }}</td>
-                              <td>{{ order.region }}</td>
-                              <td>{{ order.display_type }}</td>
-                              <td>{{ order.surface_type }}</td>
-                              <td class="submitted-date">{{ order.submitted_date.strftime('%d-%m-%Y') }}</td>
-                              <td class="payment-status {% if order.payment_status == 'paid' %}paid{% elif order.payment_status == 'rejected' %}rejected{% else %}unpaid{% endif %}">
-                                  {{ order.payment_status }}
-                              </td>
-                              <td>
-                                  {% if order.payment_status == 'paid' %}
-                                      <span style="color: green;">Payment Accepted</span>
-                                  {% elif order.payment_status == 'rejected' %}
-                                      <span style="color: red;">Payment Rejected</span>
-                                  {% else %}
-                                      <form action="{{ url_for('orders') }}" method="post" class="action-form" data-order-id="{{ order.id }}">
-                                          <button type="submit" class="paid-button" name="action" value="accept">Accept</button>
-                                          <button type="submit" class="paid-button" name="action" value="reject">Reject</button>
-                                      </form>
-                                  {% endif %}
-                              </td>
-                          </tr>
-                      {% endfor %}
-                  {% endfor %}
-              </tbody>
-              
-                </table>
-            </div>
             <div class="pagination" id="pagination-container"></div>
         </div>      
     <script>
