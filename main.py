@@ -115,9 +115,8 @@ admin.add_view(ModelView(Payment, db.session))
 
 @app.route('/order_history')
 def order_history():
-    user_id = session.get('user_id')  # Assuming you store the user's ID in the session
+    user_id = session.get('user_id') 
     if user_id is None:
-        # Handle the case where the user is not logged in or the session is expired
         return "User not logged in", 403
 
     # Retrieve orders belonging to the current user
@@ -151,7 +150,7 @@ def accept_penalty(order_id):
     if order:
         try:
             order.status = 'accepted' 
-            order.penalty_status = 'accepted'  # Update penalty status to 'accepted'
+            order.penalty_status = 'accepted' 
             db.session.commit()
             print(f"Order ID: {order_id}, Status: {order.status}, Payment Status: {order.penalty_status}")
         except Exception as e:
@@ -163,7 +162,7 @@ def reject_penalty(order_id):
     order = Orders.query.get(order_id)
     if order:
         order.status = 'rejected' 
-        order.penalty_status = 'rejected'  # Assuming penalty remains pending upon rejection
+        order.penalty_status = 'rejected'  
         db.session.commit()
         print(f"Order ID {order_id} has been rejected.")
     else:
@@ -208,8 +207,8 @@ def orders():
 def accept_order(order_id):
     order = Orders.query.get(order_id)
     if order:
-        order.status = 'accepted'  # Update the status column
-        order.payment_status = 'paid'  # Update the payment status
+        order.status = 'accepted' 
+        order.payment_status = 'paid' 
         db.session.commit()
         print(f"Order ID: {order_id}, Status: {order.status}, Payment Status: {order.payment_status}")
         return True
@@ -220,7 +219,7 @@ def accept_order(order_id):
 def reject_order(order_id):
     order = Orders.query.get(order_id)
     if order:
-        order.status = 'rejected'  # Update the status column
+        order.status = 'rejected'  
         order.payment_status = 'rejected'
         db.session.commit()
         print(f"Order ID: {order_id}, Status: {order.payment_status}")
@@ -264,8 +263,6 @@ def penalty():
 
     app.logger.info(f"Changed order ID: {changed_order_id}")
     app.logger.info(f"Changed fields: {changed_fields}")
-
-    # Assuming the username is stored in the 'username' column of the Orders table
     orders_with_penalty = Orders.query.filter(Orders.user_name == user_name, Orders.penalty != 0).all()
 
     active_page = 'penalty'
@@ -288,11 +285,10 @@ def loginclient():
             session['name'] = user.name
             session['lastname'] = user.lastname
             flash('Login successful!', 'success')
-            return redirect(url_for('loginclient'))  # Redirect to home page after successful login
+            return redirect(url_for('loginclient'))  
         else:
             flash('Invalid username or password', 'danger')
     active_page='loginclient'
-    # GET request or invalid login attempt, render login form
     return render_template('loginclient.html', active_page=active_page)
 
 @app.route('/loginmanager', methods=['GET', 'POST'])
@@ -307,11 +303,10 @@ def loginmanager():
             session['name'] = user.name
             session['lastname'] = user.lastname
             flash('Login successful!', 'success')
-            return redirect(url_for('loginmanager'))  # Redirect to home page after successful login
+            return redirect(url_for('loginmanager'))  
         else:
             flash('Invalid username or password', 'danger')
     active_page='loginmanager'
-    # GET request or invalid login attempt, render login form
     return render_template('loginmanager.html', active_page=active_page)
 
 @app.route('/chat')
@@ -319,34 +314,10 @@ def chat():
     active_page = 'chat'
     return render_template('chat.html', active_page=active_page)
 
-@app.route('/manager_settings', methods=['POST','GET'])
-def manager_settings():
-    active_page='manager_settings'
-    return render_template('manager_settings.html', active_page=active_page)
-
-@app.route('/chatmanager')
-def chatmanager():
-    active_page = 'chatmanager'
-    return render_template('chatmanager.html', active_page=active_page)
-
 @app.route('/calendar')
 def calendar():
     active_page='calendar'
     return render_template('calendar.html', active_page=active_page)
-
-
-@app.route('/help')
-def help():
-    return render_template('help.html')
-
-@app.route('/services')
-def services():
-    return render_template('services.html')
-
-@app.route('/settings', methods=['POST', 'GET'])
-def settings():
-    active_page='settings'
-    return render_template('settings.html', active_page=active_page)
 
 @app.route('/orderclient', methods=['POST','GET'])
 def orderclient():
@@ -364,7 +335,6 @@ def next_order():
 
 @app.route('/changed_order/<int:order_id>', methods=['POST', 'GET'])
 def changed_order(order_id):
-    # Fetch the order details from the database
     name = session.get('name')
     surname = session.get('lastname')
     order = Orders.query.get(order_id)
@@ -378,8 +348,7 @@ def changed_order(order_id):
         region = request.form['city']
         display_type = request.form['display']
         surface_type = request.form['surface']
-
-        # Check if any fields have changed
+        
         changed_fields = []
         if order.company_name != company_name:
             changed_fields.append("Company Name")
@@ -396,7 +365,6 @@ def changed_order(order_id):
         if order.surface_type != surface_type:
             changed_fields.append("Surface Type")
 
-        # Update the order information in the database
         order.company_name = company_name
         order.billboard_info = billboard_info
         order.start_date = start_date
@@ -405,25 +373,20 @@ def changed_order(order_id):
         order.display_type = display_type
         order.surface_type = surface_type
 
-        # Commit changes to the database
         db.session.commit()
 
         if changed_fields:
-            # Store the changed order ID and changed fields in the session
             session['changed_order_id'] = order_id
             session['changed_fields'] = changed_fields
-            # Calculate the penalty amount
             penalty_amount = calculate_penalty_amount(changed_fields)
             order.penalty=penalty_amount
             db.session.commit()
-            # Redirect to the penalty page
             return redirect(url_for('penalty', order_id=order_id, penalty_amount=penalty_amount))
 
 
         return redirect(url_for('orderhistory'))
 
     active_page = 'change'
-    # Pass the order object to the template
     return render_template('changed_order.html',  name=name, surname=surname, order=order, order_id=order_id, surface=order.surface_type, display=order.display_type, price=order.price, active_page=active_page)
 
 @app.route('/payment/<int:order_id>', methods=['POST', 'GET'])
@@ -434,26 +397,19 @@ def payment(order_id):
 
     if request.method == 'POST':
         try:
-            # Logic to update order status to indicate payment
-            order.paid = True  # Assuming you have a 'paid' attribute in your Orders model
-            db.session.commit()  # Assuming you're using SQLAlchemy
-
-            # Logic to send email confirmation
+            order.paid = True  
+            db.session.commit() 
             user = Users.query.get(order.user_id)
             if user:
                 send_confirmation_email(user.email, order_id, order.price)
             else:
                 flash("User associated with the order not found", 'danger')
 
-            # Redirect to the confirmation page after payment
             return redirect(url_for('conf', order_id=order_id))
         except Exception as e:
-            db.session.rollback()  # Rollback the transaction in case of an error
+            db.session.rollback() 
             flash("An error occurred while processing your payment", 'danger')
-            # Log the exception for debugging purposes
             print(e)
-
-    # Assuming you have the following variables available in the template
     name = order.user_name
     price = int(order.price)
     active_page = 'payment'
@@ -464,7 +420,6 @@ def send_confirmation_email(email, order_id, price):
     token = str(uuid.uuid4())
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     try:
-        # Check if the email exists in the database
         result = cursor.execute('SELECT * FROM users WHERE  email=%s', [email])
         account = cursor.fetchone()
         if account:
@@ -477,23 +432,17 @@ def send_confirmation_email(email, order_id, price):
         else:
             flash("Email does not exist in the database", 'danger')
     except Exception as e:
-        conn.rollback()  # Rollback the transaction in case of an error
+        conn.rollback()  
         flash("An error occurred while sending the email", 'danger')
-        # Log the exception for debugging purposes
         print(e)
     finally:
         cursor.close()
 @app.route('/conf/<int:order_id>', methods=['GET', 'POST'])
-def conf(order_id):
-    
-    # Logic to retrieve order details from the database
+def conf(order_id)
     order = Orders.query.get(order_id)
 
     if not order:
-        # Handle case where order is not found
         return "Order not found", 404
-
-    # Pass the order details to the template
     active_page = 'conf'
     return render_template('conf.html', order=order, active_page=active_page)
 
@@ -545,7 +494,7 @@ def orderhistory():
         try:
             db.session.commit()
         except Exception as e:
-            db.session.rollback()  # Rollback changes in case of error
+            db.session.rollback()  
             print(f"Error committing changes to the database: {e}")
 
         print("Changed fields:", changed_fields)
@@ -587,8 +536,6 @@ def dashboardmanager():
 
 @app.route('/dashboard', methods=['POST','GET'])
 def dashboard():
-    # Assuming 'name', 'surname', 'phone_number', and 'email' are stored in session
-    
     name = session.get('name')
     username = session.get('username') 
     surname = session.get('lastname')
@@ -601,34 +548,24 @@ def dashboard():
     current_app.logger.debug(f"Surname: {surname}")
     current_app.logger.debug(f"Phone Number: {phone_number}")
     current_app.logger.debug(f"Email: {email}")
-
-    # Pass the variables to the template rendering function
     return render_template('dashboard.html', name=name, username=username, surname=surname, phone_number=phone_number, email=email, active_page='dashboard')
 
 @app.route('/edit_profile', methods=['POST','GET'])
 def edit_profile():
-    # Retrieve session variables
     name = session.get('name')
     username = session.get('username')
     surname = session.get('lastname')
     phone_number = session.get('phone_number')
     email = session.get('email')
-      # Assuming 'username' is stored in session
-
-    # Pass the session variables to the template rendering function
     return render_template('edit_profile.html', name=name, username=username, surname=surname, phone_number=phone_number, email=email)
     
 @app.route('/editprofile', methods=['POST','GET'])
 def editprofile():
-    # Retrieve session variables
     name = session.get('name')
     username = session.get('username')
     surname = session.get('lastname')
     phone_number = session.get('phone_number')
     email = session.get('email')
-      # Assuming 'username' is stored in session
-
-    # Pass the session variables to the template rendering function
     return render_template('editprofile.html', name=name, username=username, surname=surname, phone_number=phone_number, email=email)
 
 
@@ -636,43 +573,33 @@ def editprofile():
 def update_profile():
     if request.method == 'POST':
         try:
-            # Get form data
             name = request.form.get('name')
             surname = request.form.get('surname')
             phone_number = request.form.get('phone_number')
             email = request.form.get('email')
-            # For manager's table
             manager_info = {
                 'manager_field1': request.form.get('manager_field1'),
                 'manager_field2': request.form.get('manager_field2'),
-                # Add more fields as needed
             }
-
-            # Update user information in the database
             with conn.cursor() as cursor:
                 cursor.execute("""
                     UPDATE users
                     SET name = %s, lastname = %s, phone_number = %s, email = %s
                     WHERE username = %s;
-                """, (name, surname, phone_number, email, session['username']))  # Use username as the condition
+                """, (name, surname, phone_number, email, session['username'])) 
                 conn.commit()
-
-                # Check if manager_info is not empty (manager's profile updated)
                 if manager_info:
                     cursor.execute("""
                         UPDATE managers
                         SET name = %s, lastname = %s, phone_number = %s, email = %s
                         WHERE manager_id = %s;
-                    """, (name, surname, phone_number, email, session['manager_id']))  # Use manager_id as the condition
+                    """, (name, surname, phone_number, email, session['manager_id']))  
                     conn.commit()
-
-            # Update session variables with form data
             session['name'] = name
             session['lastname'] = surname
             session['phone_number'] = phone_number
             session['email'] = email
 
-            # Check if manager_info is not empty (manager's profile updated)
             if manager_info:
                 flash('Manager profile updated successfully.', 'success')
                 return redirect(url_for('edit_profile_manager'))
@@ -680,7 +607,6 @@ def update_profile():
                 flash('Profile updated successfully.', 'success')
                 return redirect(url_for('edit_profile_user'))
         except Exception as e:
-            # Print or log the exception to debug
             print(e)
             flash('An error occurred while updating the profile.', 'error')
             return redirect(url_for('edit_profile_user'))
@@ -688,7 +614,6 @@ def update_profile():
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
     if request.method == 'POST':
-        # Retrieve user information from the session
         user_id = session.get('user_id')
         user_name = session.get('name')
         user_lastname = session.get('lastname')
@@ -697,7 +622,6 @@ def submit_order():
         if not user:
             return "User not found", 404
         
-        # Retrieve the uploaded PDF file
         pdf_file = request.files['pdf-format']
         if pdf_file:
             filename = secure_filename(pdf_file.filename)
@@ -705,8 +629,7 @@ def submit_order():
             pdf_path = filename
         else:
             pdf_path = None
-
-        # Retrieve order information from the form
+            
         company_name = request.form['company-name']
         billboard_info = request.form['billboard-info']
         region = request.form['city'] 
@@ -715,7 +638,7 @@ def submit_order():
         start_date = request.form['Start']
         end_date = request.form['End']
         price = request.form['total-price']
-        # Create a dictionary representation of the order attributes
+
         order = Orders(
             user_id=user_id,
             user_name=user_name,
@@ -731,34 +654,27 @@ def submit_order():
             price=price 
         )
 
-        # Store the order details in the session
         #order = Orders(**order_details)
-        #order.calculate_price()  # Assuming calculate_price method exists in the Orders class
+        #order.calculate_price()  
         #total_price = order.price
         #order_details['total_price'] = total_price
         db.session.add(order)
         db.session.commit()
-
-        # Redirect to the payment page
         return redirect(url_for('orderhistory'))
-
-    # If the request method is not POST, redirect to some other page
     return redirect(url_for('profile'))
 
 @app.route('/submit_payment', methods=['POST'])
 def submit_payment():
     if request.method == 'POST':
-        # Retrieve user information from the session
         user_id = session.get('user_id')
         user_name = session.get('name')
         user_lastname = session.get('lastname')
 
-        # Retrieve payment information from the form
         card_number_encrypted = request.form.get('card_number')
         cardholder_name = request.form.get('cardholder_name')
         expiration = request.form.get('expiration')
         cvv_encrypted = request.form.get('cvv')
-        # Create payment instance and add to database
+
         payment = Payment(
             user_id=user_id,
             user_name=user_name,
@@ -770,24 +686,19 @@ def submit_payment():
            
         )
         db.session.add(payment)
-
-        # Commit payment information to the database
         db.session.commit()
 
-        # Retrieve the order details from the session
         order_details = session.get('order_details')
 
-        # If order details exist in the session, save the order in the database
         if order_details:
             order = Orders(**order_details)
             db.session.add(order)
             db.session.commit()
 
-        # Redirect to the order history page
         return redirect(url_for('orderhistory'))
 
-    # If the request method is not POST, redirect to some other page
     return redirect(url_for('orderhistory'))
+    
 def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
@@ -798,35 +709,25 @@ def login_is_required(function):
     return wrapper
 @app.route('/google-login')
 def google_login():
-    # Generate the URL for the Google login callback
     google_login_url = url_for('google_callback', _external=True)
     return render_template('home.html', google_login_url=google_login_url)
 
 @app.route('/callback')
 def callback():
-    # Fetch the authorization response from Google
     authorization_response = request.url
-
-    # Fetch the token
     flow.fetch_token(authorization_response=authorization_response)
-
-    # Get user info from Google
     google_id_token = flow.credentials.id_token
     google_user_info = id_token.verify_oauth2_token(google_id_token, requests.Request(), GOOGLE_CLIENT_ID)
-
-    # Check if the user already exists in your database
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute('SELECT * FROM users WHERE email=%s', (google_user_info['email'],))
     account = cursor.fetchone()
 
     if account:
-        # User exists, log them in
         session['loggedin'] = True
         session['id'] = account['id']
         session['username'] = account['username']
         return redirect(url_for('profile'))
     else:
-        # User doesn't exist, you can register them if needed
         flash('User does not exist. You may need to register.')
         return redirect(url_for('home'))
 
@@ -842,8 +743,7 @@ def signup():
             phone_number = request.form['phone_number']
 
             hashed_password = generate_password_hash(password)
-
-            # Check if the username or email already exists
+            
             existing_user = Users.query.filter((Users.username == username) | (Users.email == email)).first()
             if existing_user:
                 flash('Account already exists!')
@@ -858,7 +758,6 @@ def signup():
             elif not phone_number.isdigit():
                 flash('Phone number must contain only digits!')
             else:
-                # Create a new user object and add it to the database
                 new_user = Users(
                     name=name,
                     lastname=lastname,
@@ -874,7 +773,6 @@ def signup():
     except Exception as e:
         db.session.rollback()
         flash('An error occurred while processing your request. Please try again later.')
-        # Log the exception details for debugging purposes
         print(e)
 
     return render_template('signup.html')
@@ -886,10 +784,8 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        # Attempt to authenticate as a manager
         manager = Manager.query.filter_by(username=username).first()
         if manager:
-            # Authentication successful, set session variables for manager
             session['loggedin'] = True
             session['manager_id'] = manager.id
             session['username'] = manager.username
@@ -898,12 +794,10 @@ def login():
             session['phone_number'] = manager.phone_number
             session['email'] = manager.email
             flash('Manager login successful!', 'success')
-            return redirect(url_for('loginmanager'))  # Redirect to manager profile route
+            return redirect(url_for('loginmanager'))  
 
-        # Attempt to authenticate as a user
         user = Users.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
-            # Authentication successful, set session variables for user
             session['loggedin'] = True
             session['user_id'] = user.id
             session['username'] = user.username
@@ -912,13 +806,11 @@ def login():
             session['phone_number'] = user.phone_number
             session['email'] = user.email
             flash('User login successful!', 'success')
-            return redirect(url_for('loginclient'))  # Redirect to user profile route
-        
-        # If authentication fails for both manager and user
+            return redirect(url_for('loginclient')) 
+  
         flash('Incorrect username or password', 'danger')
 
     elif request.method == 'GET':
-        # Display login form with Google login link
         google_login_url, _ = flow.authorization_url()
         return render_template('login.html', google_login_url=google_login_url)
 
@@ -928,13 +820,11 @@ def login():
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
     if request.method == 'POST':
-        # Retrieve username from session or form data
         if 'username' in session:
             username = session['username']
         else:
             username = request.form.get('username')
 
-        # Process the password change request
         new_password = request.form.get('new_password')
         confirm_password = request.form.get('confirm_password')
 
@@ -942,19 +832,15 @@ def change_password():
             flash('Passwords do not match.')
             return redirect(url_for('change_password'))
 
-        # Update the password in the database for the specified user
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         hashed_password = generate_password_hash(new_password)
         cursor.execute("UPDATE users SET password=%s WHERE username=%s", (hashed_password, username))
         conn.commit()
-
-        # Clear session to invalidate existing login
         session.clear()
 
         flash('Your password has been changed successfully. Please log in again.')
-        return redirect(url_for('login'))  # Redirect to login page after changing password
+        return redirect(url_for('login')) 
     else:
-        # Render the change password form
         return render_template('change_password.html')
 
 
@@ -967,7 +853,6 @@ def forgot_password():
         #username = request.form['username']  
         token = str(uuid.uuid4())
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Check if the username exists in the database
         result = cursor.execute('SELECT * FROM users WHERE  email=%s', [email])
         account = cursor.fetchone()
         if account:
@@ -984,7 +869,6 @@ def forgot_password():
             flash("Email do not match", 'danger')
             
         #if account:
-            # Redirect to change_password route only if the email and username combination is correct
             #return redirect(url_for('change_password'))
         #else:
             #flash('User with this username and email combination does not exist.')
@@ -1018,18 +902,6 @@ def reset_password(token):
             flash("Your token is invalid", 'danger')
 
     return render_template('reset_password.html')
-
-def send_reset_email(email, reset_token):
-    # Create a password reset email message
-    msg = Message('Password Reset Request',
-                  sender='your_email@gmail.com',
-                  recipients=[email])
-    msg.body = 'To reset your password, click the following link: {}'.format(url_for('reset_password', token=reset_token, _external=True))
-
-    # Send the email
-    mail.send(msg)
-
-
 
 
 if __name__=='__main__':
