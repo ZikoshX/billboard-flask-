@@ -70,7 +70,7 @@ class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     card_number_encrypted = db.Column(db.String(16))
     cardholder_name = db.Column(db.String(255))
-    expiration = db.Column(db.String(5))  # Assuming expiration is stored as 'MM/YY' format
+    expiration = db.Column(db.String(5))  
     cvv_encrypted = db.Column(db.String(3))
     amount = db.Column(db.Float) 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
